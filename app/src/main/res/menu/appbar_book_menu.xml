@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_show_available"
+        android:title="Available"/>
+    <item
+        android:id="@+id/item_show_landed"
+        android:title="Loaned"/>
+    <item
+        android:id="@+id/item_show_disposed"
+        android:title="Disposed"/>
+    <item
+        android:id="@+id/item_show_all"
+        android:title="All"/>
+
+</menu>

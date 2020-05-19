@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_has_book"
+        android:title="Has book"/>
+    <item
+        android:id="@+id/item_has_not_book"
+        android:title="Has not book"/>
+    <item
+        android:id="@+id/item_all"
+        android:title="All"/>
+
+</menu>

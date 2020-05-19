@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">ProgrammersLibrary</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_users">Users</string>
+    <string name="title_books">Books</string>
+    <string name="msg_no_book">No books found!</string>
+
+    <string-array name="book_status_array">
+        <item>AVAILABLE</item>
+        <item>LOANED</item>
+        <item>DISPOSED</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="msg_no_reader">No readers found!</string>
+    <string name="firstname">Firstname</string>
+    <string name="lastname">Lastname</string>
+    <string name="email">Email</string>
+    <string name="msg_no_loans">No loans found!</string>
+    <string name="title_loans">Loans</string>
+    <string name="fill_fields">Fill the fields</string>
+    <string name="choose_reader">Choose reader:</string>
+    <string name="choose_book">Choose book:</string>
+
+
+</resources>
