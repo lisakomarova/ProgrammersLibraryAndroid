@@ -184,15 +184,13 @@ public class BookListFragment extends Fragment {
         if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE")){
             actions.add("Delete");
             actions.add("Edit");
+            actions.add("Issue book");
             actions.add("Dispose book");
         }
         if(bookList.get(position).getBookStatus().toString().equals("DISPOSED")){
             actions.add("Delete");
             actions.add("Edit");
         }
-        if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE")
-                && bookList.get(position).getNumberOfCopies() > 0)
-            actions.add("Issue book");
         if(bookList.get(position).getBookStatus().toString().equals("LOANED"))
             actions.add("Return book");
 
@@ -247,14 +245,12 @@ public class BookListFragment extends Fragment {
 
         int id = bookList.get(position).getIdBook();
         book = db.getBook(id);
-        updated_number_f_copies = book.getNumberOfCopies() + 1;
 
 
         loan = db.getLoansByBookID(id);
         reader = new Reader(db.getReader(loan.getReader_id()));
         loan.setIf_closed(true);
         if(book!=null){
-            book.setNumberOfCopies(updated_number_f_copies);
             book.setBookStatus(BookStatus.AVAILABLE);
             db.updateBook(book);
         }
