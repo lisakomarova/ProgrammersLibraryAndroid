@@ -480,7 +480,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Loan getLoanByBookID(int id){
+    public Loan getLoansByBookID(int id){
         // get readable database
         SQLiteDatabase db = this.getReadableDatabase();
 

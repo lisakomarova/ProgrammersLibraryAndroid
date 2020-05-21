@@ -53,9 +53,9 @@ public class BookListFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         fragmentManager = getActivity().getSupportFragmentManager();
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -178,20 +178,24 @@ public class BookListFragment extends Fragment {
      */
     private void showActionsDialog(final int position) {
         List<String> actions = new ArrayList<>();
-        actions.add("Edit");
         actions.add("View");
         //CharSequence actions[] = new CharSequence[]{"Edit", "Delete", "View"};
 
-        if(!bookList.get(position).getBookStatus().toString().equals("DISPOSED")
-        &&bookList.get(position).getBookStatus().toString().equals("AVAILABLE"))
+        if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE")){
             actions.add("Delete");
+            actions.add("Edit");
+            actions.add("Dispose book");
+        }
+        if(bookList.get(position).getBookStatus().toString().equals("DISPOSED")){
+            actions.add("Delete");
+            actions.add("Edit");
+        }
         if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE")
                 && bookList.get(position).getNumberOfCopies() > 0)
             actions.add("Issue book");
         if(bookList.get(position).getBookStatus().toString().equals("LOANED"))
             actions.add("Return book");
-        if(!bookList.get(position).getBookStatus().toString().equals("DISPOSED"))
-            actions.add("Dispose book");
+
         final CharSequence[] charActions = actions.toArray(new CharSequence[actions.size()]);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Choose option");
@@ -215,11 +219,20 @@ public class BookListFragment extends Fragment {
                     returnBook(position);
                 }
                 else if (charActions[which].equals("Dispose book")){
-
+                    disposeBook(position);
                 }
             }
         });
         builder.show();
+    }
+
+    private void disposeBook(int position) {
+        Book book;
+        int id = bookList.get(position).getIdBook();
+        book = db.getBook(id);
+        book.setBookStatus(BookStatus.DISPOSED);
+        db.updateBook(book);
+        mAdapter.notifyDataSetChanged();
     }
 
 
@@ -237,7 +250,7 @@ public class BookListFragment extends Fragment {
         updated_number_f_copies = book.getNumberOfCopies() + 1;
 
 
-        loan = db.getLoanByBookID(id);
+        loan = db.getLoansByBookID(id);
         reader = new Reader(db.getReader(loan.getReader_id()));
         loan.setIf_closed(true);
         if(book!=null){
@@ -338,7 +351,6 @@ public class BookListFragment extends Fragment {
             }
         });
 
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public boolean onOptionsItemSelected(MenuItem item){

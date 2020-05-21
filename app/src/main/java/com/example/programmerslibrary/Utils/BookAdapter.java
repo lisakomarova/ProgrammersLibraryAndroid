@@ -80,7 +80,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
 
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthors());
-        holder.numberOfBooks.setText(String.format("%",book.getNumberOfCopies()));
+        holder.numberOfBooks.setText(Integer.toString(book.getNumberOfCopies()));
         holder.bookStatus.setText(book.getBookStatus().toString());
         Bitmap bitmap = BitmapFactory.decodeFile(book.getCover());
         holder.cover.setImageBitmap(bitmap);

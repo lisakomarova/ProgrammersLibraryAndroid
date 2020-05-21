@@ -106,7 +106,7 @@ public class AddReaderFragment extends Fragment {
                 email = email_edit.getText().toString();
                 //hasBook = hasBook_check_box.isChecked();
 
-                if(firstname.equalsIgnoreCase("") || hasBook.equals(null))
+                if(firstname.equalsIgnoreCase(""))
                 {
                     firstname_edit.setError("please enter firstname");//it gives user to info message //use any one //
 
