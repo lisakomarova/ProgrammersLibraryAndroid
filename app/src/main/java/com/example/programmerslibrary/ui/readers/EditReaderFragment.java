@@ -55,6 +55,8 @@ public class EditReaderFragment extends Fragment {
     String  email;
     Boolean hasBook;
 
+    Reader reader;
+
     MyDBHelper db;
 
     @Override
@@ -67,7 +69,7 @@ public class EditReaderFragment extends Fragment {
         fragmentManager = getActivity().getSupportFragmentManager();
 
 
-        hasBook_check_box = (CheckBox) view.findViewById(R.id.edit_has_book_check_box);
+        //hasBook_check_box = (CheckBox) view.findViewById(R.id.edit_has_book_check_box);
         firstname_edit = (EditText) view.findViewById(R.id.edit_firstname_edit_text);
         lastname_edit = (EditText) view.findViewById(R.id.edit_lastname_edit_text);
         email_edit = (EditText) view.findViewById(R.id.edit_email_edit_text);
@@ -78,11 +80,11 @@ public class EditReaderFragment extends Fragment {
         //Retrieve the value
         final int position = getArguments().getInt("position");
 
-        Reader reader= db.getReader(position);
+        reader = db.getReader(position);
         firstname_edit.setText(reader.getFirstName());
         lastname_edit.setText(reader.getLastName());
         email_edit.setText(reader.getEmail());
-        hasBook_check_box.setChecked(reader.doesHaveBook());
+        //hasBook_check_box.setChecked(reader.doesHaveBook());
 
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,12 +108,12 @@ public class EditReaderFragment extends Fragment {
                 firstname = firstname_edit.getText().toString();
                 lastname = lastname_edit.getText().toString();
                 email = email_edit.getText().toString();
-                hasBook = hasBook_check_box.isChecked();
+                //hasBook = hasBook_check_box.isChecked();
 
-                if(firstname.equalsIgnoreCase("") || hasBook.equals(null))
+                if(firstname.equalsIgnoreCase(""))
                 {
                     firstname_edit.setError("please enter firstname");//it gives user to info message //use any one //
-                    hasBook_check_box.setChecked(false);
+                    //hasBook_check_box.setChecked(false);
 
                 }
                 else
@@ -120,7 +122,7 @@ public class EditReaderFragment extends Fragment {
                     newReader.setFirstName(firstname);
                     newReader.setLastName(lastname);
                     newReader.setEmail(email);
-                    newReader.setHasBook(hasBook);
+                    newReader.setHasBook(reader.doesHaveBook());
 
                     updateReader(newReader, position);
 

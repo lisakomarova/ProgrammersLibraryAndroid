@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.programmerslibrary.Items.Items;
@@ -28,17 +29,20 @@ public class LoanAdapter extends RecyclerView.Adapter<LoanAdapter.MyViewHolder> 
 
     private List<Loan> loansList;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView reader;
         TextView book;
         TextView date;
+        ImageView ifClosed;
 
-        public MyViewHolder(View view) {
+
+        MyViewHolder(View view) {
             super(view);
             this.reader  = view.findViewById(R.id.textView_loan_reader);
             this.book = view.findViewById(R.id.textView_loan_book);
             this.date = view.findViewById(R.id.textView_loan_date);
+            this.ifClosed = view.findViewById(R.id.imageView_if_loan_closed);
         }
     }
 
@@ -51,6 +55,7 @@ public class LoanAdapter extends RecyclerView.Adapter<LoanAdapter.MyViewHolder> 
     }
 
 
+    @NonNull
     @Override
     public LoanAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -66,6 +71,10 @@ public class LoanAdapter extends RecyclerView.Adapter<LoanAdapter.MyViewHolder> 
         holder.reader.setText(loan.getReader());
         holder.book.setText(loan.getBook());
         holder.date.setText(loan.getLoan_date());
+        if(loan.getIf_closed())
+            holder.ifClosed.setImageResource(R.drawable.ic_lens_green_24dp);
+        else
+            holder.ifClosed.setImageResource(R.drawable.ic_lens_red_24dp);
     }
 
     @Override

@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Book;
@@ -70,7 +71,8 @@ public class IssueBookFragment extends Fragment {
         ArrayList<String> books = new ArrayList<>();
         for (Book b : db.getAllBooks()
         ) {
-            books.add(b.getTitle());
+            if (b.getBookStatus().equals(BookStatus.AVAILABLE))
+                books.add(b.getTitle());
         }
 
         ArrayList<String> readers = new ArrayList<>();
@@ -158,6 +160,7 @@ public class IssueBookFragment extends Fragment {
                 loan.setIf_closed(false);
                 if(book!=null && updated_number_f_copies!=-1){
                     book.setNumberOfCopies(updated_number_f_copies);
+                    book.setBookStatus(BookStatus.LOANED);
                     db.updateBook(book);
                 }
                 if(reader!=null){

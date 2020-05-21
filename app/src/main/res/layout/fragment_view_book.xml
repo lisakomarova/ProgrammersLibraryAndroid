@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:background="@android:color/transparent"
-            android:drawableLeft="@drawable/ic_back_black_24dp"
+            android:drawableStart="@drawable/ic_back_black_24dp"
             android:textSize="24sp"/>
         <View
             android:layout_width="0dp"
@@ -33,7 +34,7 @@
             android:padding="16dp"
             android:textSize="20sp"
             android:background="@android:color/transparent"
-            android:text="Edit"/>
+            android:text="@string/edit"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +55,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="40"
                 android:background="@android:color/transparent"
-                app:srcCompat="@drawable/book_no_cover" />
+                app:srcCompat="@drawable/book_no_cover"
+                android:contentDescription="@string/cover_of_picture" />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,7 +80,7 @@
                             android:textColor="@android:color/black"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Title" />
+                            android:hint="@string/title" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
                 <LinearLayout
@@ -99,7 +101,7 @@
                             android:textColor="@android:color/black"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Genre" />
+                            android:hint="@string/genre" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
                 <LinearLayout
@@ -120,7 +122,7 @@
                             android:textColor="@android:color/black"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Publication date" />
+                            android:hint="@string/publication_date" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -143,7 +145,7 @@
                     android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Authors" />
+                    android:hint="@string/authors" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <LinearLayout
@@ -157,7 +159,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp">
+                android:layout_marginEnd="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/view_n_of_copies_edit_text"
@@ -165,7 +167,7 @@
                     android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Number of copies" />
+                    android:hint="@string/number_of_copies" />
             </com.google.android.material.textfield.TextInputLayout>
             <Spinner
                 android:id="@+id/view_book_status_spinner"

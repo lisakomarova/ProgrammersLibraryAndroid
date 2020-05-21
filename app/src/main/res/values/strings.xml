@@ -14,14 +14,40 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="msg_no_reader">No readers found!</string>
-    <string name="firstname">Firstname</string>
-    <string name="lastname">Lastname</string>
-    <string name="email">Email</string>
     <string name="msg_no_loans">No loans found!</string>
     <string name="title_loans">Loans</string>
     <string name="fill_fields">Fill the fields</string>
     <string name="choose_reader">Choose reader:</string>
     <string name="choose_book">Choose book:</string>
+    <string name="if_closed">if closed</string>
+    <string name="book">Book</string>
+    <string name="reader">Reader</string>
+    <string name="view">View</string>
+    <string name="delete">Delete</string>
+    <string name="issue_book">Issue book</string>
+    <string name="return_book">Return book</string>
+    <string name="dispose_book">Dispose book</string>
+    <string name="available">Available</string>
+    <string name="loaned">Loaned</string>
+    <string name="disposed">Disposed</string>
+    <string name="all">All</string>
+    <string name="search">Search</string>
+    <string name="edit_reader">Edit reader</string>
+    <string name="edit">Edit</string>
+    <string name="cover_of_picture">cover of picture</string>
+    <string name="add_book">Add book</string>
+    <string name="title">Title</string>
+    <string name="genre">Genre</string>
+    <string name="publication_date">Publication date</string>
+    <string name="authors">Authors</string>
+    <string name="number_of_copies">Number of copies</string>
+    <string name="choose_cover">Choose cover</string>
+    <string name="cover_path">cover path</string>
+    <string name="save">Save</string>
+    <string name="add_reader">Add reader</string>
+    <string name="firstname">Firstname</string>
+    <string name="lastname">Lastname</string>
+    <string name="email">Email</string>
 
 
 </resources>

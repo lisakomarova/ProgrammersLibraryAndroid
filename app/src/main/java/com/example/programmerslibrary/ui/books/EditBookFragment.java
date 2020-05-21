@@ -75,9 +75,11 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.book_status_array, android.R.layout.simple_spinner_item);
+                R.array.book_status_array, R.layout.spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setEnabled(false);
+        spinner.setClickable(false);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);

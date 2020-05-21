@@ -3,13 +3,17 @@ package com.example.programmerslibrary.ui.books;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +35,7 @@ import com.example.programmerslibrary.Utils.BookAdapter;
 import com.example.programmerslibrary.Utils.RecyclerTouchListener;
 import com.example.programmerslibrary.models.Book;
 import com.example.programmerslibrary.models.Loan;
+import com.example.programmerslibrary.models.Reader;
 import com.example.programmerslibrary.ui.loan.IssueBookFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -67,6 +72,8 @@ public class BookListFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         noNotesView = view.findViewById(R.id.empty_notes_view);
+
+        registerForContextMenu(recyclerView);
 
 
         db = MainActivity.getDb();
@@ -172,11 +179,14 @@ public class BookListFragment extends Fragment {
     private void showActionsDialog(final int position) {
         List<String> actions = new ArrayList<>();
         actions.add("Edit");
-        actions.add("Delete");
         actions.add("View");
         //CharSequence actions[] = new CharSequence[]{"Edit", "Delete", "View"};
 
-        if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE") && bookList.get(position).getNumberOfCopies() > 0)
+        if(!bookList.get(position).getBookStatus().toString().equals("DISPOSED")
+        &&bookList.get(position).getBookStatus().toString().equals("AVAILABLE"))
+            actions.add("Delete");
+        if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE")
+                && bookList.get(position).getNumberOfCopies() > 0)
             actions.add("Issue book");
         if(bookList.get(position).getBookStatus().toString().equals("LOANED"))
             actions.add("Return book");
@@ -188,45 +198,21 @@ public class BookListFragment extends Fragment {
         builder.setItems(charActions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    // Create new fragment and transaction
-                    Fragment newFragment = new EditBookFragment();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-                    Bundle args = new Bundle();
-                    args.putInt("position", bookList.get(position).getIdBook());
-                    newFragment.setArguments(args);
-
-                    // Replace whatever is in the fragment_container view with this fragment,
-                    // and add the transaction to the back stack if needed
-                    transaction.replace(R.id.nav_host_fragment, newFragment);
-                    // Commit the transaction
-                    transaction.commit();
+                if (charActions[which].equals("Edit")) {
+                    editBook(position);
                 }
-                else if (which == 1) {
+                else if (charActions[which].equals("Delete")) {
                     deleteBook(position);
                 }
-                else if (which == 2) {
+                else if (charActions[which].equals("View")) {
                     viewBook(position);
                 }
                 else if (charActions[which].equals("Issue book")){
-                    Fragment newFragment = new IssueBookFragment();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-                    Bundle args = new Bundle();
-                    args.putInt("position", bookList.get(position).getIdBook());
-
-                    newFragment.setArguments(args);
-
-                    // Replace whatever is in the fragment_container view with this fragment,
-                    // and add the transaction to the back stack if needed
-                    transaction.replace(R.id.nav_host_fragment, newFragment);
-                    // Commit the transaction
-                    transaction.commit();
+                    issueBook(position);
 
                 }
                 else if (charActions[which].equals("Return book")){
-
+                    returnBook(position);
                 }
                 else if (charActions[which].equals("Dispose book")){
 
@@ -234,6 +220,71 @@ public class BookListFragment extends Fragment {
             }
         });
         builder.show();
+    }
+
+
+    private void returnBook(int position) {
+        Loan loan = new Loan();
+        Book book;
+        Reader reader = new Reader();
+        int updated_number_f_copies = 0;
+
+        //getting ids of chosen book and reader
+        //getting number of copies and increment it
+
+        int id = bookList.get(position).getIdBook();
+        book = db.getBook(id);
+        updated_number_f_copies = book.getNumberOfCopies() + 1;
+
+
+        loan = db.getLoanByBookID(id);
+        reader = new Reader(db.getReader(loan.getReader_id()));
+        loan.setIf_closed(true);
+        if(book!=null){
+            book.setNumberOfCopies(updated_number_f_copies);
+            book.setBookStatus(BookStatus.AVAILABLE);
+            db.updateBook(book);
+        }
+        if(reader!=null){
+            reader.setHasBook(false);
+            db.updateReader(reader);
+        }
+        db.updateLoan(loan);
+        bookList.clear();
+        bookList.addAll(db.getAllBooks());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void issueBook(int position) {
+        Fragment newFragment = new IssueBookFragment();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        Bundle args = new Bundle();
+        args.putInt("position", bookList.get(position).getIdBook());
+
+        newFragment.setArguments(args);
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack if needed
+        transaction.replace(R.id.nav_host_fragment, newFragment);
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    private void editBook(int position) {
+        // Create new fragment and transaction
+        Fragment newFragment = new EditBookFragment();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        Bundle args = new Bundle();
+        args.putInt("position", bookList.get(position).getIdBook());
+        newFragment.setArguments(args);
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack if needed
+        transaction.replace(R.id.nav_host_fragment, newFragment);
+        // Commit the transaction
+        transaction.commit();
     }
 
     private void viewBook(int position) {
@@ -272,6 +323,20 @@ public class BookListFragment extends Fragment {
 
         menu.clear();
         inflater.inflate(R.menu.appbar_book_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -289,7 +354,9 @@ public class BookListFragment extends Fragment {
                         newBookList.add(b);
                     }
                 }
-                bookList.retainAll(newBookList);
+                bookList.clear();
+                bookList.addAll(newBookList);
+                //bookList.retainAll(newBookList);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.item_show_landed:
@@ -302,7 +369,9 @@ public class BookListFragment extends Fragment {
                         newBookList.add(b);
                     }
                 }
-                bookList.retainAll(newBookList);
+                bookList.clear();
+                bookList.addAll(newBookList);
+                //bookList.retainAll(newBookList);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.item_show_disposed:
@@ -315,7 +384,9 @@ public class BookListFragment extends Fragment {
                         newBookList.add(b);
                     }
                 }
-                bookList.retainAll(newBookList);
+                bookList.clear();
+                bookList.addAll(newBookList);
+                //bookList.retainAll(newBookList);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.item_show_all:

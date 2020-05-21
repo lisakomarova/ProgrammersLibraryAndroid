@@ -9,9 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.programmerslibrary.Items.Items;
@@ -27,16 +30,18 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> {
+public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> implements Filterable {
 
     private static final String TAG = "BookAdapter";
 
-    private HashMap<Integer, Boolean> checkedMap = new HashMap<>();
 
 
     private List<Book> booksList;
+    private List<Book> booksListFull;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
         TextView author;
@@ -44,7 +49,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
         TextView bookStatus;
         ImageView cover;
 
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
             this.title  = view.findViewById(R.id.textView_title);
             this.author = view.findViewById(R.id.textView_author);
@@ -57,11 +62,10 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
 
     public BookAdapter(Context context, ArrayList<Book> objects) {
         booksList = objects;
-        for(int i = 0; i < objects.size(); i++){
-            checkedMap.put(i, false);
-        }
+        booksListFull = new ArrayList<>(booksList);
     }
 
+    @NonNull
     @Override
     public BookAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -76,7 +80,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
 
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthors());
-        holder.numberOfBooks.setText(Integer.toString(book.getNumberOfCopies()));
+        holder.numberOfBooks.setText(String.format("%",book.getNumberOfCopies()));
         holder.bookStatus.setText(book.getBookStatus().toString());
         Bitmap bitmap = BitmapFactory.decodeFile(book.getCover());
         holder.cover.setImageBitmap(bitmap);
@@ -87,25 +91,34 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
         return booksList.size();
     }
 
-    public void toggleChecked(int position) {
-        if (checkedMap.get(position)) {
-            checkedMap.put(position, false);
-        } else {
-            checkedMap.put(position, true);
-        }
-
-        notifyDataSetChanged();
+    @Override
+    public Filter getFilter() {
+        return bookFilter;
     }
 
-    public ArrayList<Book> getCheckedItems() {
-        ArrayList<Book> checkedItems = new ArrayList<>();
-
-        for (int i = 0; i < checkedMap.size(); i++) {
-            if (checkedMap.get(i)) {
-                (checkedItems).add(Items.getListofBooks().get(i));
+    private Filter bookFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Book> filteredList = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(booksListFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (Book item : booksListFull) {
+                    if (item.toString().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
             }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
         }
-
-        return checkedItems;
-    }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            booksList.clear();
+            booksList.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
 }

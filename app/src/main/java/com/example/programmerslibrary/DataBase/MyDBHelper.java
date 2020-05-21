@@ -215,7 +215,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
             cursorReader.moveToFirst();
 
         String bookTitle = cursorBook.getString(0);
-        String readerFullname = cursorReader.getString(0) + " " + cursorReader.getString(0);
+        String readerFullname = cursorReader.getString(0) + " " + cursorReader.getString(1);
 
         // prepare loan object
         Loan loan = new Loan(
@@ -225,6 +225,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
                 cursor.getString(cursor.getColumnIndex(Loan.COLUMN_LOAN_DATE)),
                 Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(Loan.COLUMN_IF_CLOSED))));
 
+        loan.setReader_id(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_READER_ID)));
+        loan.setBook_id(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_BOOK_ID)));
         // close the db connection
         cursor.close();
 
@@ -340,7 +342,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
                     cursorReader.moveToFirst();
 
                 String bookTitle = cursorBook.getString(0);
-                String readerFullname = cursorReader.getString(0) + " " + cursorReader.getString(0);
+                String readerFullname = cursorReader.getString(0) + " " + cursorReader.getString(1);
 
                 // prepare loan object
                 Loan loan = new Loan(
@@ -349,6 +351,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
                         readerFullname,
                         cursor.getString(cursor.getColumnIndex(Loan.COLUMN_LOAN_DATE)),
                         Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(Loan.COLUMN_IF_CLOSED))));
+                loan.setReader_id(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_READER_ID)));
+                loan.setBook_id(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_BOOK_ID)));
                 loans.add(loan);
             } while (cursor.moveToNext());
         }
@@ -443,7 +447,12 @@ public class MyDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Loan.COLUMN_IF_CLOSED, loan.getIf_closed());
+        if(loan.getIf_closed())
+            values.put(Loan.COLUMN_IF_CLOSED, "true");
+        else
+            values.put(Loan.COLUMN_IF_CLOSED, "false");
+
+
 
         // updating row
         return db.update(Loan.TABLE_NAME, values, Loan.COLUMN_ID + " = ?",
@@ -469,5 +478,50 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.delete(Loan.TABLE_NAME, Loan.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(loan.getLoan_id())});
         db.close();
+    }
+
+    public Loan getLoanByBookID(int id){
+        // get readable database
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(Loan.TABLE_NAME,
+                new String[]{Loan.COLUMN_ID, Loan.COLUMN_READER_ID, Loan.COLUMN_BOOK_ID, Loan.COLUMN_LOAN_DATE,
+                        Loan.COLUMN_IF_CLOSED},
+                Loan.COLUMN_BOOK_ID + "=? and " + Loan.COLUMN_IF_CLOSED + "=?",
+                new String[]{String.valueOf(id), "false"}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Cursor cursorReader = db.query(Reader.TABLE_NAME,
+                new String[]{Reader.COLUMN_FIRSTNAME, Reader.COLUMN_LASTNAME},
+                Reader.COLUMN_ID + "=?" ,
+                new String[]{String.valueOf(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_READER_ID)))}, null, null,
+                null, null);
+        Cursor cursorBook = db.query(Book.TABLE_NAME,
+                new String[]{Book.COLUMN_TITLE},
+                Book.COLUMN_ID + "=?",
+                new String[]{String.valueOf(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_BOOK_ID)))}, null, null,
+                null, null);
+        if (cursorBook != null)
+            cursorBook.moveToFirst();
+        if (cursorReader != null)
+            cursorReader.moveToFirst();
+
+        String bookTitle = cursorBook.getString(0);
+        String readerFullname = cursorReader.getString(0) + " " + cursorReader.getString(1);
+
+        // prepare loan object
+        Loan loan = new Loan(
+                cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_ID)),
+                bookTitle,
+                readerFullname,
+                cursor.getString(cursor.getColumnIndex(Loan.COLUMN_LOAN_DATE)),
+                Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(Loan.COLUMN_IF_CLOSED))));
+        loan.setReader_id(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_READER_ID)));
+        loan.setBook_id(cursor.getInt(cursor.getColumnIndex(Loan.COLUMN_BOOK_ID)));
+
+        // close the db connection
+        cursor.close();
+
+        return loan;
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_edit"
+        android:title="@string/edit"/>
+    <item
+        android:id="@+id/item_view"
+        android:title="@string/view"/>
+    <item
+        android:id="@+id/item_delete"
+        android:visible="false"
+        android:title="@string/delete"/>
+    <item
+        android:id="@+id/item_issue_book"
+        android:visible="false"
+        android:title="@string/issue_book"/>
+    <item
+        android:id="@+id/item_return_book"
+        android:visible="false"
+        android:title="@string/return_book"/>
+    <item
+        android:id="@+id/item_dispose_book"
+        android:visible="false"
+        android:title="@string/dispose_book"/>
+</menu>

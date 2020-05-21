@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -89,9 +90,15 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.book_status_array, android.R.layout.simple_spinner_item);
+                R.array.book_status_array, R.layout.spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setEnabled(false);
+        spinner.setClickable(false);
+        int spinnerPosition = adapter.getPosition(BookStatus.AVAILABLE.toString());
+
+        spinner.setSelection(spinnerPosition);
+
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
@@ -139,6 +146,7 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
                 publ_date = publ_date_edit.getText().toString();
                 authors = authors_edit.getText().toString();
                 number_of_copies = number_of_copies_edit.getText().toString();
+                int publ_year = Integer.valueOf(publ_date);
 
                 if(title.equalsIgnoreCase("") || publ_date.equalsIgnoreCase("") || number_of_copies.equalsIgnoreCase(""))
                 {
@@ -146,6 +154,8 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
                     publ_date_edit.setError("please enter username");//it gives user to info message //use any one //
                     number_of_copies_edit.setError("please enter username");//it gives user to info message //use any one //
                 }
+                else if (publ_year < 1500 || publ_year > Integer.valueOf(Year.now().toString()))
+                    publ_date_edit.setError("please enter correct year");
                 else
                 {
                     Book newBook = new  Book();

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,7 +20,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:background="@android:color/transparent"
-            android:drawableLeft="@drawable/ic_back_black_24dp"
+            android:drawableStart="@drawable/ic_back_black_24dp"
             android:textSize="24sp"/>
         <View
             android:layout_width="0dp"
@@ -31,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="Save"
+            android:text="@string/save"
             android:background="@android:color/transparent"
             android:textSize="20sp"/>
     </LinearLayout>
@@ -42,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@+id/topPanelAddBook"
         app:layout_constraintLeft_toLeftOf="parent"
         android:padding="5pt"
-        android:text="Add book" />
+        android:text="@string/add_book" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,7 +67,7 @@
                     android:id="@+id/title_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Title" />
+                    android:hint="@string/title" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <LinearLayout
@@ -85,7 +86,7 @@
                     android:id="@+id/genre_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Genre" />
+                    android:hint="@string/genre" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <LinearLayout
@@ -104,7 +105,9 @@
                     android:id="@+id/publ_date_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Publication date" />
+                    android:inputType="numberDecimal"
+                    android:maxLength="4"
+                    android:hint="@string/publication_date" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <LinearLayout
@@ -123,7 +126,7 @@
                     android:id="@+id/authors_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Authors" />
+                    android:hint="@string/authors" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <LinearLayout
@@ -137,13 +140,14 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp">
+                android:layout_marginEnd="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/n_of_copies_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Number of copies" />
+                    android:inputType="numberDecimal"
+                    android:hint="@string/number_of_copies" />
             </com.google.android.material.textfield.TextInputLayout>
             <Spinner
                 android:id="@+id/book_status_spinner"
@@ -162,10 +166,11 @@
                 android:layout_height="60dp"
                 android:background="@android:color/transparent"
                 android:id="@+id/cover_path_imageView"
-                app:srcCompat="@drawable/book_no_cover" />
+                app:srcCompat="@drawable/book_no_cover"
+                android:contentDescription="@string/cover_of_picture" />
 
             <Button
-                android:text="Choose cover"
+                android:text="@string/choose_cover"
                 android:id="@+id/Choose"
                 android:textAlignment="center"
                 android:layout_width="wrap_content"
@@ -176,9 +181,9 @@
         <TextView
             android:id="@+id/cover_path_textView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="cover path" />
+            android:text="@string/cover_path" />
 
     </LinearLayout>
 

@@ -74,7 +74,7 @@ public class AddReaderFragment extends Fragment {
 
         fragmentManager = getActivity().getSupportFragmentManager();
 
-        hasBook_check_box = (CheckBox) view.findViewById(R.id.has_book_check_box);
+        //hasBook_check_box = (CheckBox) view.findViewById(R.id.has_book_check_box);
         firstname_edit = (EditText) view.findViewById(R.id.firstname_edit_text);
         lastname_edit = (EditText) view.findViewById(R.id.lastname_edit_text);
         email_edit = (EditText) view.findViewById(R.id.email_edit_text);
@@ -104,7 +104,7 @@ public class AddReaderFragment extends Fragment {
                 firstname = firstname_edit.getText().toString();
                 lastname = lastname_edit.getText().toString();
                 email = email_edit.getText().toString();
-                hasBook = hasBook_check_box.isChecked();
+                //hasBook = hasBook_check_box.isChecked();
 
                 if(firstname.equalsIgnoreCase("") || hasBook.equals(null))
                 {
@@ -117,7 +117,7 @@ public class AddReaderFragment extends Fragment {
                     newReader.setFirstName(firstname);
                     newReader.setLastName(lastname);
                     newReader.setEmail(email);
-                    newReader.setHasBook(hasBook);
+                    newReader.setHasBook(false);
 
                     createReader(newReader);
 
