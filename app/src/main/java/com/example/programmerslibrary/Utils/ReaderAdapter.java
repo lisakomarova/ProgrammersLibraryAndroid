@@ -1,21 +1,15 @@
 package com.example.programmerslibrary.Utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.Items.Items;
 import com.example.programmerslibrary.R;
-import com.example.programmerslibrary.models.Book;
 import com.example.programmerslibrary.models.Reader;
 
 import java.util.ArrayList;
@@ -68,8 +62,8 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
     public void onBindViewHolder(ReaderAdapter.MyViewHolder holder, int position) {
         Reader reader= readersList.get(position);
 
-        holder.firstName.setText(reader.getFirstName());
-        holder.lastName.setText(reader.getLastName());
+        holder.firstName.setText(reader.getFirst_name());
+        holder.lastName.setText(reader.getLast_name());
         holder.email.setText(reader.getEmail());
         if(reader.doesHaveBook())
             holder.hasBook.setImageResource(R.drawable.ic_lens_red_24dp);
@@ -82,25 +76,4 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
         return readersList.size();
     }
 
-    public void toggleChecked(int position) {
-        if (checkedMap.get(position)) {
-            checkedMap.put(position, false);
-        } else {
-            checkedMap.put(position, true);
-        }
-
-        notifyDataSetChanged();
-    }
-
-    public ArrayList<Book> getCheckedItems() {
-        ArrayList<Book> checkedItems = new ArrayList<>();
-
-        for (int i = 0; i < checkedMap.size(); i++) {
-            if (checkedMap.get(i)) {
-                (checkedItems).add(Items.getListofBooks().get(i));
-            }
-        }
-
-        return checkedItems;
-    }
 }

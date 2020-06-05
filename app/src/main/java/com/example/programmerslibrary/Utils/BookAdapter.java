@@ -3,12 +3,9 @@ package com.example.programmerslibrary.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.provider.ContactsContract;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -17,16 +14,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.Items.Items;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Book;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -53,7 +44,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
             super(view);
             this.title  = view.findViewById(R.id.textView_title);
             this.author = view.findViewById(R.id.textView_author);
-            this.numberOfBooks = view.findViewById(R.id.textView_numberOfBooks);
             this.bookStatus = view.findViewById(R.id.textView_book_status);
             this.cover = view.findViewById(R.id.image_book);
         }
@@ -80,8 +70,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.MyViewHolder> 
 
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthors());
-        holder.numberOfBooks.setText(Integer.toString(book.getNumberOfCopies()));
-        holder.bookStatus.setText(book.getBookStatus().toString());
+        holder.bookStatus.setText(book.getBook_status().toString());
         Bitmap bitmap = BitmapFactory.decodeFile(book.getCover());
         holder.cover.setImageBitmap(bitmap);
     }

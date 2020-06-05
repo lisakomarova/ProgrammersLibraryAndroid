@@ -1,9 +1,5 @@
 package com.example.programmerslibrary.ui.loan;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,48 +7,41 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.StrictMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
-import com.example.programmerslibrary.Utils.BookAdapter;
 import com.example.programmerslibrary.Utils.LoanAdapter;
 import com.example.programmerslibrary.Utils.RecyclerTouchListener;
-import com.example.programmerslibrary.models.Book;
 import com.example.programmerslibrary.models.Loan;
-import com.example.programmerslibrary.ui.books.AddBookFragment;
-import com.example.programmerslibrary.ui.books.EditBookFragment;
-import com.example.programmerslibrary.ui.books.ViewBookFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class LoanListFragment extends Fragment {
 
-    MyDBHelper db;
+    MyAPIHelper db;
     private ArrayList<Loan> loanList = new ArrayList<>();
     private LoanAdapter mAdapter;
     private RecyclerView recyclerView;
     private TextView noLoansView;
+    String user_id;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -70,11 +59,17 @@ public class LoanListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_loans);
         noLoansView = view.findViewById(R.id.empty_loans_view);
 
+        user_id = MainActivity.getUserID();
 
         db = MainActivity.getDb();
 
-        loanList.addAll(db.getAllLoans());
+        loanList.addAll(db.getAllLoans(user_id));
 
+        for (Loan l : loanList
+             ) {
+            l.setReader(db.getReaderNameByReaderID(l.getReader_id()));
+            l.setBook(db.getBookTitleByBookID(l.getBook_id()));
+        }
 
         mAdapter = new LoanAdapter(getContext(), loanList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -116,7 +111,7 @@ public class LoanListFragment extends Fragment {
     private void toggleEmptyNotes() {
         // you can check notesList.size() > 0
 
-        if (db.getLoansCount() > 0) {
+        if (db.getLoansCount(user_id) > 0) {
             noLoansView.setVisibility(View.GONE);
         } else {
             noLoansView.setVisibility(View.VISIBLE);

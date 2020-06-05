@@ -42,9 +42,6 @@
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/recycler_view"
         android:layout_alignBottom="@+id/recycler_view"
-        android:layout_marginStart="@dimen/fab_margin"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="65dp"
+        android:layout_margin="20sp"
         app:srcCompat="@drawable/ic_add_white_24dp" />
 </RelativeLayout>

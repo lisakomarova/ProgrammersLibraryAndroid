@@ -25,7 +25,6 @@
     <string name="view">View</string>
     <string name="delete">Delete</string>
     <string name="issue_book">Issue book</string>
-    <string name="return_book">Return book</string>
     <string name="dispose_book">Dispose book</string>
     <string name="available">Available</string>
     <string name="loaned">Loaned</string>
@@ -48,6 +47,12 @@
     <string name="firstname">Firstname</string>
     <string name="lastname">Lastname</string>
     <string name="email">Email</string>
+    <string name="return_book">Return book</string>
+    <string name="cancel">Cancel</string>
+    <string name="prompt_email">Enter email</string>
+    <string name="prompt_password">Enter password</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="sync">Synchronize</string>
 
 
 </resources>

@@ -1,22 +1,18 @@
 package com.example.programmerslibrary.ui.books;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Environment;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,16 +24,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
-import com.example.programmerslibrary.Items.Items;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Book;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -45,8 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
@@ -58,23 +49,24 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
     final int REQUEST_CODE_GALLERY = 999;
     ImageView imageView;
     TextView cover_path;
-    EditText title_edit, genre_edit, publ_date_edit, authors_edit, number_of_copies_edit;
+    EditText title_edit, genre_edit, publ_date_edit, authors_edit;
     Spinner spinner;
     Button chooseCover, buttonBack, buttonSave;
 
+    String user_id;
     String  title;
     String  genre;
     String  publ_date;
     String  authors;
-    String  number_of_copies;
     String  book_status;
 
-    private MyDBHelper db;
+    private MyAPIHelper db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -85,6 +77,9 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
         db = MainActivity.getDb();
 
         fragmentManager = getActivity().getSupportFragmentManager();
+
+        user_id = getArguments().getString("user");
+
 
         spinner = (Spinner)view.findViewById(R.id.book_status_spinner);
 
@@ -107,7 +102,6 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
         genre_edit = (EditText) view.findViewById(R.id.genre_edit_text);
         publ_date_edit = (EditText) view.findViewById(R.id.publ_date_edit_text);
         authors_edit = (EditText) view.findViewById(R.id.authors_edit_text);
-        number_of_copies_edit = (EditText) view.findViewById(R.id.n_of_copies_edit_text);
         chooseCover = (Button) view.findViewById(R.id.Choose);
         buttonBack = (Button) view.findViewById(R.id.addBookBack);
         buttonSave = (Button) view.findViewById(R.id.addBookSave);
@@ -145,28 +139,25 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
                 genre = genre_edit.getText().toString();
                 publ_date = publ_date_edit.getText().toString();
                 authors = authors_edit.getText().toString();
-                number_of_copies = number_of_copies_edit.getText().toString();
                 int publ_year = Integer.valueOf(publ_date);
 
-                if(title.equalsIgnoreCase("") || publ_date.equalsIgnoreCase("") || number_of_copies.equalsIgnoreCase(""))
+                if(title.equalsIgnoreCase("") || publ_date.equalsIgnoreCase(""))
                 {
                     title_edit.setError("please enter username");//it gives user to info message //use any one //
                     publ_date_edit.setError("please enter username");//it gives user to info message //use any one //
-                    number_of_copies_edit.setError("please enter username");//it gives user to info message //use any one //
                 }
                 else if (publ_year < 1500 || publ_year > Integer.valueOf(Year.now().toString()))
                     publ_date_edit.setError("please enter correct year");
                 else
                 {
                     Book newBook = new  Book();
+                    newBook.setUserid(user_id);
                     newBook.setTitle(title);
                     newBook.setGenre(genre);
-                    newBook.setPublicationYear(Integer.parseInt(publ_date));
+                    newBook.setPublication_year(Integer.parseInt(publ_date));
                     newBook.setAuthors(authors);
-                    newBook.setNumberOfCopies(Integer.parseInt(number_of_copies));
-                    newBook.setBookStatus(BookStatus.valueOf(book_status));
+                    newBook.setBook_status(BookStatus.valueOf(book_status));
                     newBook.setCover(cover_path.getText().toString());
-
                     createBook(newBook);
 
                     Fragment newFragment = new BookListFragment();
@@ -241,7 +232,7 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
      */
     private void createBook(Book book) {
 
-        MyDBHelper db = MainActivity.getDb();
+        MyAPIHelper db = MainActivity.getDb();
         // inserting book in db and getting
         // newly inserted book id
         long id = db.insertBook(book);

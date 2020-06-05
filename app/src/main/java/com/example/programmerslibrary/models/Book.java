@@ -9,71 +9,42 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 public class Book implements Serializable {
-    public static final String TABLE_NAME = "book";
 
-    public static final String COLUMN_ID = "book_id";
-    public static final String COLUMN_TITLE = "title";
-    public static final String COLUMN_GENRE = "genre";
-    public static final String COLUMN_PUBLICATION_YEAR = "publication_year";
-    public static final String COLUMN_AUTHORS = "authors";
-    public static final String COLUMN_NUMBER_OF_COPIES = "number_of_copies";
-    public static final String COLUMN_BOOK_STATUS= "book_status";
-    public static final String COLUMN_COVER= "cover";
-
-    private int idBook;
+    private int book_id;
     private String title;
     private String genre;
-    private int publicationYear;
+    private int publication_year;
     private String authors;
-    private int numberOfCopies;
-    private BookStatus bookStatus;
+    private BookStatus book_status;
     private String cover;
+    private String userid;
 
-
-    public static final String CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + " ("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + COLUMN_TITLE + " TEXT NOT NULL, "
-                    + COLUMN_GENRE + " TEXT, "
-                    + COLUMN_PUBLICATION_YEAR + " INTEGER NOT NULL, "
-                    + COLUMN_AUTHORS + " TEXT, "
-                    + COLUMN_NUMBER_OF_COPIES + " INTEGER NOT NULL, "
-                    + COLUMN_BOOK_STATUS + " TEXT CHECK( book_status IN ('AVAILABLE','LOANED', 'DISPOSED') ) NOT NULL DEFAULT 'AVAILABLE', "
-                    + COLUMN_COVER + " TEXT"
-                    + ")";
 
     public Book (){
 
     }
     public Book (Book another){
-        this.idBook = another.idBook;
+        this.book_id = another.book_id;
         this.title = another.title;
         this.genre = another.genre;
-        this.publicationYear = another.publicationYear;
+        this.publication_year = another.publication_year;
         this.authors = another.authors;
-        this.numberOfCopies = another.numberOfCopies;
-        this.bookStatus = another.bookStatus;
+        this.book_status = another.book_status;
         this.cover = another.cover;
+        this.userid = another.userid;
     }
-    public Book(@NonNull int idBook, @NonNull String title, String genre, int publicationYear,
-                String authors, int numberOfCopies, BookStatus bookStatus, String cover){
-        if((publicationYear < 1900) & (publicationYear > Calendar.getInstance().get(Calendar.YEAR)))
+    public Book(@NonNull int book_id, String user_id, @NonNull String title, String genre, int publication_year,
+                String authors, BookStatus book_status, String cover){
+        if((publication_year < 1900) & (publication_year > Calendar.getInstance().get(Calendar.YEAR)))
             throw new IllegalArgumentException();
-        this.idBook = idBook;
+        this.book_id = book_id;
         this.title = title;
         this.genre = genre;
-        this.publicationYear = publicationYear;
+        this.publication_year = publication_year;
         this.authors = authors;
-        this.numberOfCopies = numberOfCopies;
-        this.bookStatus = bookStatus;
+        this.book_status = book_status;
         this.cover = cover;
-    }
-
-    public void incrementNumberOfCopies(){
-        numberOfCopies++;
-    }
-    public void decrementNumberOfCopies(){
-        numberOfCopies--;
+        this.userid = user_id;
     }
 
     public String getTitle() {
@@ -92,12 +63,12 @@ public class Book implements Serializable {
         this.genre = genre;
     }
 
-    public int getPublicationYear() {
-        return publicationYear;
+    public int getPublication_year() {
+        return publication_year;
     }
 
-    public void setPublicationYear(int publicationYear) {
-        this.publicationYear = publicationYear;
+    public void setPublication_year(int publication_year) {
+        this.publication_year = publication_year;
     }
 
     public String getAuthors() {
@@ -108,28 +79,21 @@ public class Book implements Serializable {
         this.authors = authors;
     }
 
-    public int getNumberOfCopies() {
-        return numberOfCopies;
+
+    public BookStatus getBook_status() {
+        return book_status;
     }
 
-    public void setNumberOfCopies(int numberOfCopies) {
-        this.numberOfCopies = numberOfCopies;
+    public void setBook_status(BookStatus book_status) {
+        this.book_status = book_status;
     }
 
-    public BookStatus getBookStatus() {
-        return bookStatus;
+    public int getBook_id() {
+        return book_id;
     }
 
-    public void setBookStatus(BookStatus bookStatus) {
-        this.bookStatus = bookStatus;
-    }
-
-    public int getIdBook() {
-        return idBook;
-    }
-
-    public void setIdBook(int idBook) {
-        this.idBook = idBook;
+    public void setBook_id(int book_id) {
+        this.book_id = book_id;
     }
 
     public String getCover() {
@@ -143,6 +107,14 @@ public class Book implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return title + " " + publicationYear + " " + genre + " " + authors;
+        return title + " " + publication_year + " " + genre + " " + authors;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
     }
 }

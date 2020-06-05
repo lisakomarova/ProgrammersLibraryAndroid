@@ -40,22 +40,23 @@
                 android:layout_margin="5pt"
                 android:text="@string/fill_fields" />
             <TextView
-                android:id="@+id/textView_choose_reader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/choose_reader" />
-            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                android:id="@+id/spinnerReadersLoanFragment"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="40dp" />
-            <TextView
                 android:id="@+id/textView_choose_book"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/choose_book" />
             <com.toptoche.searchablespinnerlibrary.SearchableSpinner
                 android:id="@+id/spinnerBooksLoanFragment"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="40dp" />
+
+            <TextView
+                android:id="@+id/textView_choose_reader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_reader" />
+            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                android:id="@+id/spinnerReadersLoanFragment"
                 android:layout_width="match_parent"
                 android:layout_weight="1"
                 android:layout_height="40dp" />
@@ -69,6 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:enabled="false"
                     android:text="Issue book"
                     android:textSize="15dp"
                     style="@style/Widget.MaterialComponents.Button.TextButton"

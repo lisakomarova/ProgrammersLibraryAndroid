@@ -2,8 +2,9 @@ package com.example.programmerslibrary.ui.books;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,10 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.SearchView;
 import android.widget.TextView;
+import androidx.appcompat.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,10 +26,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
+import com.example.programmerslibrary.SignUpActivity;
 import com.example.programmerslibrary.Utils.BookAdapter;
 import com.example.programmerslibrary.Utils.RecyclerTouchListener;
 import com.example.programmerslibrary.models.Book;
@@ -38,13 +38,15 @@ import com.example.programmerslibrary.models.Loan;
 import com.example.programmerslibrary.models.Reader;
 import com.example.programmerslibrary.ui.loan.IssueBookFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookListFragment extends Fragment {
 
-    MyDBHelper db;
+    MyAPIHelper db;
+    String user_id;
     FragmentManager fragmentManager;
     private ArrayList<Book> bookList = new ArrayList<>();
     private BookAdapter mAdapter;
@@ -55,6 +57,8 @@ public class BookListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         fragmentManager = getActivity().getSupportFragmentManager();
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setHasOptionsMenu(true);
     }
 
@@ -76,9 +80,10 @@ public class BookListFragment extends Fragment {
         registerForContextMenu(recyclerView);
 
 
+        user_id = MainActivity.getUserID();
         db = MainActivity.getDb();
 
-        bookList.addAll(db.getAllBooks());
+        bookList.addAll(db.getAllBooks(user_id));
 
         FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -86,8 +91,12 @@ public class BookListFragment extends Fragment {
             public void onClick(View view) {
                 // Create new fragment and transaction
                 Fragment newFragment = new AddBookFragment();
+                Bundle args = new Bundle();
+                args.putString("user", user_id);
+
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
+                newFragment.setArguments(args);
                 // Replace whatever is in the fragment_container view with this fragment,
                 // and add the transaction to the back stack if needed
                 transaction.replace(R.id.nav_host_fragment, newFragment);
@@ -115,7 +124,7 @@ public class BookListFragment extends Fragment {
                 recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, final int position) {
-                viewBook(position);
+
             }
 
             @Override
@@ -133,36 +142,12 @@ public class BookListFragment extends Fragment {
 
 
     /**
-     * Inserting new book in db
-     * and refreshing the list
-     */
-    private void createBook(Book book) {
-        // inserting book in db and getting
-        // newly inserted book id
-        long id = db.insertBook(book);
-
-        // get the newly inserted book from db
-        Book n = db.getBook(id);
-
-        if (n != null) {
-            // adding new note to array list at 0 position
-            bookList.add(0, n);
-
-            // refreshing the list
-            mAdapter.notifyDataSetChanged();
-
-            toggleEmptyNotes();
-        }
-    }
-
-
-    /**
      * Deleting book from SQLite and removing the
      * item from the list by its position
      */
     private void deleteBook(int position) {
         // deleting the book from db
-        db.deleteBook(bookList.get(position));
+        db.deleteBook(bookList.get(position).getBook_id());
 
         // removing the book from the list
         bookList.remove(position);
@@ -181,17 +166,17 @@ public class BookListFragment extends Fragment {
         actions.add("View");
         //CharSequence actions[] = new CharSequence[]{"Edit", "Delete", "View"};
 
-        if(bookList.get(position).getBookStatus().toString().equals("AVAILABLE")){
+        if(bookList.get(position).getBook_status().toString().equals("AVAILABLE")){
             actions.add("Delete");
             actions.add("Edit");
             actions.add("Issue book");
             actions.add("Dispose book");
         }
-        if(bookList.get(position).getBookStatus().toString().equals("DISPOSED")){
+        if(bookList.get(position).getBook_status().toString().equals("DISPOSED")){
             actions.add("Delete");
             actions.add("Edit");
         }
-        if(bookList.get(position).getBookStatus().toString().equals("LOANED"))
+        if(bookList.get(position).getBook_status().toString().equals("LOANED"))
             actions.add("Return book");
 
         final CharSequence[] charActions = actions.toArray(new CharSequence[actions.size()]);
@@ -211,7 +196,6 @@ public class BookListFragment extends Fragment {
                 }
                 else if (charActions[which].equals("Issue book")){
                     issueBook(position);
-
                 }
                 else if (charActions[which].equals("Return book")){
                     returnBook(position);
@@ -226,10 +210,12 @@ public class BookListFragment extends Fragment {
 
     private void disposeBook(int position) {
         Book book;
-        int id = bookList.get(position).getIdBook();
+        int id = bookList.get(position).getBook_id();
         book = db.getBook(id);
-        book.setBookStatus(BookStatus.DISPOSED);
+        book.setBook_status(BookStatus.DISPOSED);
         db.updateBook(book);
+        bookList.clear();
+        bookList.addAll(db.getAllBooks(user_id));
         mAdapter.notifyDataSetChanged();
     }
 
@@ -243,24 +229,25 @@ public class BookListFragment extends Fragment {
         //getting ids of chosen book and reader
         //getting number of copies and increment it
 
-        int id = bookList.get(position).getIdBook();
+        int id = bookList.get(position).getBook_id();
         book = db.getBook(id);
+
 
 
         loan = db.getLoansByBookID(id);
         reader = new Reader(db.getReader(loan.getReader_id()));
         loan.setIf_closed(true);
         if(book!=null){
-            book.setBookStatus(BookStatus.AVAILABLE);
+            book.setBook_status(BookStatus.AVAILABLE);
             db.updateBook(book);
         }
         if(reader!=null){
-            reader.setHasBook(false);
+            reader.setHas_book(false);
             db.updateReader(reader);
         }
         db.updateLoan(loan);
         bookList.clear();
-        bookList.addAll(db.getAllBooks());
+        bookList.addAll(db.getAllBooks(user_id));
         mAdapter.notifyDataSetChanged();
     }
 
@@ -269,7 +256,8 @@ public class BookListFragment extends Fragment {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         Bundle args = new Bundle();
-        args.putInt("position", bookList.get(position).getIdBook());
+        args.putInt("position", bookList.get(position).getBook_id());
+        args.putString("user", user_id);
 
         newFragment.setArguments(args);
 
@@ -286,7 +274,7 @@ public class BookListFragment extends Fragment {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         Bundle args = new Bundle();
-        args.putInt("position", bookList.get(position).getIdBook());
+        args.putInt("position", bookList.get(position).getBook_id());
         newFragment.setArguments(args);
 
         // Replace whatever is in the fragment_container view with this fragment,
@@ -302,7 +290,7 @@ public class BookListFragment extends Fragment {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         Bundle args = new Bundle();
-        args.putInt("position", bookList.get(position).getIdBook());
+        args.putInt("position", bookList.get(position).getBook_id());
         newFragment.setArguments(args);
 
         // Replace whatever is in the fragment_container view with this fragment,
@@ -320,7 +308,7 @@ public class BookListFragment extends Fragment {
     private void toggleEmptyNotes() {
         // you can check notesList.size() > 0
 
-        if (db.getBooksCount() > 0) {
+        if (db.getBooksCount(user_id) > 0) {
             noNotesView.setVisibility(View.GONE);
         } else {
             noNotesView.setVisibility(View.VISIBLE);
@@ -355,10 +343,10 @@ public class BookListFragment extends Fragment {
             case R.id.item_show_available:
                 newBookList = new ArrayList<>();
                 bookList.clear();
-                bookList.addAll(db.getAllBooks());
+                bookList.addAll(db.getAllBooks(user_id));
                 for (Book b: bookList
                      ) {
-                    if(b.getBookStatus().toString().equals("AVAILABLE")){
+                    if(b.getBook_status().toString().equals("AVAILABLE")){
                         newBookList.add(b);
                     }
                 }
@@ -370,10 +358,10 @@ public class BookListFragment extends Fragment {
             case R.id.item_show_landed:
                 newBookList = new ArrayList<>();
                 bookList.clear();
-                bookList.addAll(db.getAllBooks());
+                bookList.addAll(db.getAllBooks(user_id));
                 for (Book b: bookList
                 ) {
-                    if(b.getBookStatus().toString().equals("LOANED")){
+                    if(b.getBook_status().toString().equals("LOANED")){
                         newBookList.add(b);
                     }
                 }
@@ -384,11 +372,11 @@ public class BookListFragment extends Fragment {
                 return true;
             case R.id.item_show_disposed:
                 bookList.clear();
-                bookList.addAll(db.getAllBooks());
+                bookList.addAll(db.getAllBooks(user_id));
                 newBookList = new ArrayList<>();
                 for (Book b: bookList
                 ) {
-                    if(b.getBookStatus().toString().equals("DISPOSED")){
+                    if(b.getBook_status().toString().equals("DISPOSED")){
                         newBookList.add(b);
                     }
                 }
@@ -399,8 +387,16 @@ public class BookListFragment extends Fragment {
                 return true;
             case R.id.item_show_all:
                 bookList.clear();
-                bookList.addAll(db.getAllBooks());
+                bookList.addAll(db.getAllBooks(user_id));
                 mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.item_logout:
+                FirebaseAuth.getInstance().signOut();
+
+                Intent intent = new Intent(getActivity(), SignUpActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                getActivity().finish();
                 return true;
             default:
                 return false;

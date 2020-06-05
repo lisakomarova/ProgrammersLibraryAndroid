@@ -1,6 +1,5 @@
 package com.example.programmerslibrary.ui.books;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Environment;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +25,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
@@ -49,7 +49,7 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
     final int REQUEST_CODE_GALLERY = 999;
     ImageView imageView;
     TextView cover_path;
-    EditText title_edit, genre_edit, publ_date_edit, authors_edit, number_of_copies_edit;
+    EditText title_edit, genre_edit, publ_date_edit, authors_edit;
     Spinner spinner;
     Button chooseCoverEdit, buttonBackEdit, buttonSaveEdit;
 
@@ -57,10 +57,16 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
     String genre;
     String publ_date;
     String authors;
-    String number_of_copies;
     String book_status;
 
-    MyDBHelper db;
+    MyAPIHelper db;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,7 +94,6 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
         genre_edit = (EditText) view.findViewById(R.id.edit_genre_edit_text);
         publ_date_edit = (EditText) view.findViewById(R.id.edit_publ_date_edit_text);
         authors_edit = (EditText) view.findViewById(R.id.edit_authors_edit_text);
-        number_of_copies_edit = (EditText) view.findViewById(R.id.edit_n_of_copies_edit_text);
         chooseCoverEdit = (Button) view.findViewById(R.id.edit_Choose);
         buttonBackEdit = (Button) view.findViewById(R.id.editBookBack);
         buttonSaveEdit = (Button) view.findViewById(R.id.editBookSave);
@@ -101,13 +106,12 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
         Book book = db.getBook(position);
         title_edit.setText(book.getTitle());
         genre_edit.setText(book.getGenre());
-        publ_date_edit.setText(Integer.toString(book.getPublicationYear()));
+        publ_date_edit.setText(Integer.toString(book.getPublication_year()));
         authors_edit.setText(book.getAuthors());
-        number_of_copies_edit.setText(Integer.toString(book.getNumberOfCopies()));
         cover_path.setText(book.getCover());
         Bitmap bitmap = BitmapFactory.decodeFile(book.getCover());
         imageView.setImageBitmap(bitmap);
-        int spinnerPosition = adapter.getPosition(book.getBookStatus().toString());
+        int spinnerPosition = adapter.getPosition(book.getBook_status().toString());
         spinner.setSelection(spinnerPosition);
 
 
@@ -143,21 +147,18 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
                 genre = genre_edit.getText().toString();
                 publ_date = publ_date_edit.getText().toString();
                 authors = authors_edit.getText().toString();
-                number_of_copies = number_of_copies_edit.getText().toString();
 
-                if (title.equalsIgnoreCase("") || publ_date.equalsIgnoreCase("") || number_of_copies.equalsIgnoreCase("")) {
+                if (title.equalsIgnoreCase("") || publ_date.equalsIgnoreCase("")) {
                     title_edit.setError("please enter username");//it gives user to info message //use any one //
                     publ_date_edit.setError("please enter username");//it gives user to info message //use any one //
-                    number_of_copies_edit.setError("please enter username");//it gives user to info message //use any one //
                 } else {
                     Book newBook = new Book();
-                    newBook.setIdBook(position);
+                    newBook.setBook_id(position);
                     newBook.setTitle(title);
                     newBook.setGenre(genre);
-                    newBook.setPublicationYear(Integer.parseInt(publ_date));
+                    newBook.setPublication_year(Integer.parseInt(publ_date));
                     newBook.setAuthors(authors);
-                    newBook.setNumberOfCopies(Integer.parseInt(number_of_copies));
-                    newBook.setBookStatus(BookStatus.valueOf(book_status));
+                    newBook.setBook_status(BookStatus.valueOf(book_status));
                     newBook.setCover(cover_path.getText().toString());
 
                     updateBook(newBook, position);
@@ -236,15 +237,13 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
     private void updateBook(Book book, int position) {
         Book n = db.getBook(position);
         // updating book info
-        n.setIdBook(book.getIdBook());
+        n.setBook_id(book.getBook_id());
         n.setTitle(book.getTitle());
         n.setGenre(book.getGenre());
-        n.setPublicationYear(book.getPublicationYear());
+        n.setPublication_year(book.getPublication_year());
         n.setAuthors(book.getAuthors());
-        n.setNumberOfCopies(book.getNumberOfCopies());
-        n.setBookStatus(book.getBookStatus());
+        n.setBook_status(book.getBook_status());
         n.setCover(book.getCover());
-
         // updating note in db
         db.updateBook(n);
 

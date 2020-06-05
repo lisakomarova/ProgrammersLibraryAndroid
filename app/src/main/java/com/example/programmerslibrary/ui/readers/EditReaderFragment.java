@@ -1,46 +1,23 @@
 package com.example.programmerslibrary.ui.readers;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
-import com.example.programmerslibrary.Enumerations.BookStatus;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
-import com.example.programmerslibrary.models.Book;
 import com.example.programmerslibrary.models.Reader;
-import com.example.programmerslibrary.ui.books.BookListFragment;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static android.app.Activity.RESULT_OK;
 
 public class EditReaderFragment extends Fragment {
     FragmentManager fragmentManager;
@@ -57,7 +34,14 @@ public class EditReaderFragment extends Fragment {
 
     Reader reader;
 
-    MyDBHelper db;
+    MyAPIHelper db;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,8 +65,8 @@ public class EditReaderFragment extends Fragment {
         final int position = getArguments().getInt("position");
 
         reader = db.getReader(position);
-        firstname_edit.setText(reader.getFirstName());
-        lastname_edit.setText(reader.getLastName());
+        firstname_edit.setText(reader.getFirst_name());
+        lastname_edit.setText(reader.getLast_name());
         email_edit.setText(reader.getEmail());
         //hasBook_check_box.setChecked(reader.doesHaveBook());
 
@@ -119,10 +103,10 @@ public class EditReaderFragment extends Fragment {
                 else
                 {
                     Reader newReader = new Reader();
-                    newReader.setFirstName(firstname);
-                    newReader.setLastName(lastname);
+                    newReader.setFirst_name(firstname);
+                    newReader.setLast_name(lastname);
                     newReader.setEmail(email);
-                    newReader.setHasBook(reader.doesHaveBook());
+                    newReader.setHas_book(reader.doesHaveBook());
 
                     updateReader(newReader, position);
 
@@ -148,10 +132,10 @@ public class EditReaderFragment extends Fragment {
     private void updateReader(Reader reader, int position) {
         Reader n = db.getReader(position);
         // updating book info
-        n.setFirstName(reader.getFirstName());
-        n.setLastName(reader.getLastName());
+        n.setFirst_name(reader.getFirst_name());
+        n.setLast_name(reader.getLast_name());
         n.setEmail(reader.getEmail());
-        n.setHasBook(reader.doesHaveBook());
+        n.setHas_book(reader.doesHaveBook());
 
         // updating note in db
         db.updateReader(n);

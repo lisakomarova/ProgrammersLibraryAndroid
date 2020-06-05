@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.Items.Items;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Book;
 import com.example.programmerslibrary.models.Loan;

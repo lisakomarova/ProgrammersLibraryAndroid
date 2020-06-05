@@ -133,20 +133,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             tools:ignore="MissingConstraints">
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_weight="0.5"
-                android:id="@+id/edit_n_of_copies_text_input"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_n_of_copies_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Number of copies" />
-            </com.google.android.material.textfield.TextInputLayout>
             <Spinner
                 android:id="@+id/edit_book_status_spinner"
                 android:layout_width="match_parent"

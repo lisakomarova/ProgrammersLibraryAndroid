@@ -1,20 +1,9 @@
 package com.example.programmerslibrary.models;
 
-import androidx.annotation.NonNull;
-
-import com.example.programmerslibrary.Enumerations.BookStatus;
-
 import java.io.Serializable;
-import java.util.Calendar;
 
 public class Loan implements Serializable {
-    public static final String TABLE_NAME = "loan";
 
-    public static final String COLUMN_ID = "loan_id";
-    public static final String COLUMN_READER_ID = "reader_id";
-    public static final String COLUMN_BOOK_ID = "book_id";
-    public static final String COLUMN_LOAN_DATE = "loan_date";
-    public static final String COLUMN_IF_CLOSED = "if_closed";
 
     private int loan_id;
     private String reader;
@@ -23,37 +12,28 @@ public class Loan implements Serializable {
     private int book_id;
     private String loan_date;
     private Boolean if_closed;
+    private String userid;
 
-    public static final String CREATE_TABLE =
-            "CREATE TABLE " + TABLE_NAME + " ("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + COLUMN_READER_ID + " TEXT NOT NULL, "
-                    + COLUMN_BOOK_ID + " TEXT  NOT NULL, "
-                    + COLUMN_LOAN_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
-                    + COLUMN_IF_CLOSED + " TEXT CHECK( if_closed IN ('true','false') ) NOT NULL DEFAULT 'false', "
-                    + "foreign key (" + COLUMN_READER_ID + ") references " + Reader.TABLE_NAME + "(" + Reader.COLUMN_ID + ")"
-                    + " on update cascade on delete cascade, "
-                    + "foreign key (" + COLUMN_BOOK_ID + ") references " + Book.TABLE_NAME + "(" + Book.COLUMN_ID + ")"
-                    + " on update cascade on delete cascade "
-                    + ")";
     public Loan (){
 
     }
 
     public Loan (Loan another){
         this.loan_id = another.loan_id;
+        this.userid = another.userid;
         this.book = another.book;
         this.reader = another.reader;
         this.loan_date = another.loan_date;
         this.if_closed = another.if_closed;
     }
 
-    public Loan(int loan_id, String book, String reader, String loan_date, Boolean if_closed){
+    public Loan(int loan_id , String userid, String book, String reader, String loan_date, Boolean if_closed){
         this.loan_id = loan_id;
         this.book = book;
         this.reader = reader;
         this.loan_date = loan_date;
         this.if_closed = if_closed;
+        this.userid = userid;
     }
 
 
@@ -112,5 +92,14 @@ public class Loan implements Serializable {
 
     public void setLoan_id(int loan_id) {
         this.loan_id = loan_id;
+    }
+
+
+    public String getUserID() {
+        return userid;
+    }
+
+    public void setUserID(String userID) {
+        this.userid = userID;
     }
 }

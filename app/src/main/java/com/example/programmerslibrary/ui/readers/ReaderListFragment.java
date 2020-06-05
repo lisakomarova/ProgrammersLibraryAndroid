@@ -2,7 +2,9 @@ package com.example.programmerslibrary.ui.readers;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,27 +23,32 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
+import com.example.programmerslibrary.SignUpActivity;
 import com.example.programmerslibrary.Utils.ReaderAdapter;
 import com.example.programmerslibrary.Utils.RecyclerTouchListener;
 import com.example.programmerslibrary.models.Reader;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 public class ReaderListFragment extends Fragment {
 
-    MyDBHelper db;
+    MyAPIHelper db;
     private ArrayList<Reader> readerList= new ArrayList<>();
     private ReaderAdapter mAdapter;
     private RecyclerView recyclerView;
     private TextView noReadersView;
+    String user_id;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -59,10 +65,11 @@ public class ReaderListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_readers);
         noReadersView = view.findViewById(R.id.empty_readers_view);
 
+        user_id = MainActivity.getUserID();
 
         db = MainActivity.getDb();
 
-        readerList.addAll(db.getAllReaders());
+        readerList.addAll(db.getAllReaders(user_id));
 
         FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab_readers);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +79,10 @@ public class ReaderListFragment extends Fragment {
                 Fragment newFragment = new AddReaderFragment();
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
+                Bundle args = new Bundle();
+                args.putString("user", user_id);
+
+                newFragment.setArguments(args);
                 // Replace whatever is in the fragment_container view with this fragment,
                 // and add the transaction to the back stack if needed
                 transaction.replace(R.id.nav_host_fragment, newFragment);
@@ -123,7 +134,7 @@ public class ReaderListFragment extends Fragment {
      */
     private void deleteReader(int position) {
         // deleting the book from db
-        db.deleteReader(readerList.get(position));
+        db.deleteReader(readerList.get(position).getReader_id());
 
         // removing the book from the list
         readerList.remove(position);
@@ -151,7 +162,7 @@ public class ReaderListFragment extends Fragment {
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
                     Bundle args = new Bundle();
-                    args.putInt("position", readerList.get(position).getReaderID());
+                    args.putInt("position", readerList.get(position).getReader_id());
                     newFragment.setArguments(args);
 
                     // Replace whatever is in the fragment_container view with this fragment,
@@ -178,7 +189,7 @@ public class ReaderListFragment extends Fragment {
     private void toggleEmptyNotes() {
         // you can check notesList.size() > 0
 
-        if (db.getReadersCount() > 0) {
+        if (db.getReadersCount(user_id) > 0) {
             noReadersView.setVisibility(View.GONE);
         } else {
             noReadersView.setVisibility(View.VISIBLE);
@@ -198,7 +209,7 @@ public class ReaderListFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.item_has_book:
                 readerList.clear();
-                readerList.addAll(db.getAllReaders());
+                readerList.addAll(db.getAllReaders(user_id));
                 newReaderList = new ArrayList<>();
                 for (Reader r: readerList
                      ) {
@@ -212,7 +223,7 @@ public class ReaderListFragment extends Fragment {
                 return true;
             case R.id.item_has_not_book:
                 readerList.clear();
-                readerList.addAll(db.getAllReaders());
+                readerList.addAll(db.getAllReaders(user_id));
                 newReaderList = new ArrayList<>();
                 for (Reader r: readerList
                 ) {
@@ -225,8 +236,16 @@ public class ReaderListFragment extends Fragment {
                 return true;
             case R.id.item_all:
                 readerList.clear();
-                readerList.addAll(db.getAllReaders());
+                readerList.addAll(db.getAllReaders(user_id));
                 mAdapter.notifyDataSetChanged();
+            case R.id.item_logout:
+                FirebaseAuth.getInstance().signOut();
+
+                Intent intent = new Intent(getActivity(), SignUpActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                getActivity().finish();
+                return true;
             default:
                 return false;
         }

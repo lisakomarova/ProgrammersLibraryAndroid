@@ -1,25 +1,21 @@
 package com.example.programmerslibrary.ui.loan;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
@@ -28,6 +24,8 @@ import com.example.programmerslibrary.models.Loan;
 import com.example.programmerslibrary.models.Reader;
 import com.example.programmerslibrary.ui.books.BookListFragment;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
@@ -38,10 +36,11 @@ public class IssueBookFragment extends Fragment {
     Spinner spinnerBook, spinnerReader;
     Button buttonIssueBook, buttonCancel;
 
+    String user_id;
     String bookTitle;
     String readerName;
 
-    MyDBHelper db;
+    MyAPIHelper db;
 
     public IssueBookFragment() {
         // Required empty public constructor
@@ -50,7 +49,8 @@ public class IssueBookFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -58,10 +58,15 @@ public class IssueBookFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_issue_book, container, false);
 
+        user_id = getArguments().getString("user");
+
         db = MainActivity.getDb();
 
         fragmentManager = getActivity().getSupportFragmentManager();
 
+
+        buttonCancel = view.findViewById(R.id.textButton_issue_book_cancel);
+        buttonIssueBook = view.findViewById(R.id.textButton_issue_book);
         spinnerBook = (Spinner) view.findViewById(R.id.spinnerBooksLoanFragment);
         spinnerReader = (Spinner) view.findViewById(R.id.spinnerReadersLoanFragment);
 
@@ -69,17 +74,16 @@ public class IssueBookFragment extends Fragment {
         spinnerReader.setOnItemSelectedListener(new SpinnerReaderClass());
 
         ArrayList<String> books = new ArrayList<>();
-        for (Book b : db.getAllBooks()
+        for (Book b : db.getAllBooks(user_id)
         ) {
-            if (b.getBookStatus().equals(BookStatus.AVAILABLE))
+            if ((b.getBook_status().equals(BookStatus.AVAILABLE)))
                 books.add(b.getTitle());
         }
-
         ArrayList<String> readers = new ArrayList<>();
-        for (Reader r : db.getAllReaders()
+        for (Reader r : db.getAllReaders(user_id)
         ) {
             if (!r.doesHaveBook())
-            readers.add(r.getFirstName() + " " + r.getLastName());
+            readers.add(r.getFirst_name() + " " + r.getLast_name());
         }
 
 
@@ -103,8 +107,8 @@ public class IssueBookFragment extends Fragment {
         // Apply the adapter to the spinner
         spinnerReader.setAdapter(adapterReader);
 
-        buttonIssueBook = view.findViewById(R.id.textButton_issue_book);
-        buttonCancel = view.findViewById(R.id.textButton_issue_book_cancel);
+
+
 
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +128,6 @@ public class IssueBookFragment extends Fragment {
             }
         });
 
-        buttonIssueBook.setEnabled(false);
         buttonIssueBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,38 +136,39 @@ public class IssueBookFragment extends Fragment {
                 Book book = new Book();
                 Reader reader = new Reader();
                 int book_id = 0, reader_id = 0;
-                int updated_number_f_copies = 0;
                 String name;
 
                 //getting ids of chosen book and reader
                 //getting number of copies and decremment it
-                for (Book b : db.getAllBooks()
+                for (Book b : db.getAllBooks(user_id)
                 ) {
                     if ( b.getTitle().equals(bookTitle)){
-                        book_id = b.getIdBook();
+                        book_id = b.getBook_id();
                         book = new Book(b);
-                        updated_number_f_copies = b.getNumberOfCopies() - 1;
                     }
                 }
 
-                for (Reader r : db.getAllReaders()
+                for (Reader r : db.getAllReaders(user_id)
                 ) {
-                    name = r.getFirstName() + " " + r.getLastName();
+                    name = r.getFirst_name() + " " + r.getLast_name();
                     if(name.equals(readerName)){
                         reader = new Reader(r);
-                        reader_id = r.getReaderID();
+                        reader_id = r.getReader_id();
                     }
                 }
+                loan.setUserID(user_id);
                 loan.setBook_id(book_id);
                 loan.setReader_id(reader_id);
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                loan.setLoan_date(dtf.format(now));
                 loan.setIf_closed(false);
-                if(book!=null && updated_number_f_copies!=-1){
-                    book.setNumberOfCopies(updated_number_f_copies);
-                    book.setBookStatus(BookStatus.LOANED);
+                if(book!=null){
+                    book.setBook_status(BookStatus.LOANED);
                     db.updateBook(book);
                 }
                 if(reader!=null){
-                    reader.setHasBook(true);
+                    reader.setHas_book(true);
                     db.updateReader(reader);
                 }
                 db.insertLoan(loan);

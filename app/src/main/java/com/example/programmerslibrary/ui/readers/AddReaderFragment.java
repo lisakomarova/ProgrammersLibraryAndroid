@@ -1,74 +1,51 @@
 package com.example.programmerslibrary.ui.readers;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Environment;
-import android.util.Log;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.example.programmerslibrary.DataBase.MyDBHelper;
-import com.example.programmerslibrary.Enumerations.BookStatus;
+import com.example.programmerslibrary.DataBase.MyAPIHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
-import com.example.programmerslibrary.models.Book;
 import com.example.programmerslibrary.models.Reader;
-import com.example.programmerslibrary.ui.books.BookListFragment;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static android.app.Activity.RESULT_OK;
 
 public class AddReaderFragment extends Fragment {
+
+
     FragmentManager fragmentManager;
 
-    CheckBox hasBook_check_box;
     EditText firstname_edit, lastname_edit, email_edit;
 
     Button buttonBack, buttonSave;
 
+    String user_id;
     String  firstname;
     String  lastname;
     String  email;
-    Boolean hasBook;
 
-    private MyDBHelper db;
+    private MyAPIHelper db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_reader, container, false);
+        user_id = getArguments().getString("user");
 
         db = MainActivity.getDb();
 
@@ -114,10 +91,11 @@ public class AddReaderFragment extends Fragment {
                 else
                 {
                     Reader newReader = new Reader();
-                    newReader.setFirstName(firstname);
-                    newReader.setLastName(lastname);
+                    newReader.setUserid(user_id);
+                    newReader.setFirst_name(firstname);
+                    newReader.setLast_name(lastname);
                     newReader.setEmail(email);
-                    newReader.setHasBook(false);
+                    newReader.setHas_book(false);
 
                     createReader(newReader);
 
@@ -143,7 +121,7 @@ public class AddReaderFragment extends Fragment {
      */
     private void createReader(Reader reader) {
 
-        MyDBHelper db = MainActivity.getDb();
+        MyAPIHelper db = MainActivity.getDb();
         // inserting book in db and getting
         // newly inserted book id
         long id = db.insertReader(reader);
