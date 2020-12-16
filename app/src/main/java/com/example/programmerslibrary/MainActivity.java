@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     static MyDBHelper db;
     private static String userID;
-    private boolean ifAuthbyFingerprint;
     private final int YOUR_PERMISSION_STATIC_CODE_IDENTIFIER=15;
 
     public static MyDBHelper getDb() {
@@ -35,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (!ifAuthbyFingerprint) {
-            auth();
-        }
+        auth();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
         super.onCreate(savedInstanceState);
@@ -66,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void auth() {
         Intent intent = new Intent(this, ShieldActivity.class);
-        startActivityForResult(intent, 1);
+        startActivity(intent);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
@@ -98,14 +95,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            return;
-        }
-        String ifAuthbyFingerprint = data.getStringExtra("ifpass");
-    }
 
     public static String getUserID(){
     return userID; }

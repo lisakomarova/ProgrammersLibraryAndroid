@@ -1,7 +1,6 @@
 package com.example.programmerslibrary.Utils;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.hardware.biometrics.BiometricPrompt;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -10,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -46,9 +44,6 @@ public class ShieldActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("ifpass", "true");
-                setResult(RESULT_OK, intent);
                 finish();
             }
 
