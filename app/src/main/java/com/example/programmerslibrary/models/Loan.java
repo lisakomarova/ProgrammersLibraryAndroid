@@ -3,6 +3,14 @@ package com.example.programmerslibrary.models;
 import java.io.Serializable;
 
 public class Loan implements Serializable {
+    public static final String TABLE_NAME = "loan";
+
+    public static final String COLUMN_ID = "loan_id";
+    public static final String COLUMN_READER_ID = "reader_id";
+    public static final String COLUMN_BOOK_ID = "book_id";
+    public static final String COLUMN_LOAN_DATE = "loan_date";
+    public static final String COLUMN_IF_CLOSED = "if_closed";
+    public static final String COLUMN_USER_ID = "user_id";
 
 
     private int loan_id;
@@ -14,6 +22,19 @@ public class Loan implements Serializable {
     private Boolean if_closed;
     private String userid;
 
+    public static final String CREATE_TABLE =
+            "CREATE TABLE " + TABLE_NAME + " ("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_USER_ID + " TEXT NOT NULL, "
+                    + COLUMN_READER_ID + " TEXT NOT NULL, "
+                    + COLUMN_BOOK_ID + " TEXT  NOT NULL, "
+                    + COLUMN_LOAN_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                    + COLUMN_IF_CLOSED + " TEXT CHECK( if_closed IN ('true','false') ) NOT NULL DEFAULT 'false', "
+                    + "foreign key (" + COLUMN_READER_ID + ") references " + Reader.TABLE_NAME + "(" + Reader.COLUMN_ID + ")"
+                    + " on update cascade on delete cascade, "
+                    + "foreign key (" + COLUMN_BOOK_ID + ") references " + Book.TABLE_NAME + "(" + Book.COLUMN_ID + ")"
+                    + " on update cascade on delete cascade "
+                    + ")";
     public Loan (){
 
     }

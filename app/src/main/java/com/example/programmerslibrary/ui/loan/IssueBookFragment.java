@@ -1,11 +1,6 @@
 package com.example.programmerslibrary.ui.loan;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
@@ -40,7 +39,7 @@ public class IssueBookFragment extends Fragment {
     String bookTitle;
     String readerName;
 
-    MyAPIHelper db;
+    MyDBHelper db;
 
     public IssueBookFragment() {
         // Required empty public constructor
@@ -67,8 +66,8 @@ public class IssueBookFragment extends Fragment {
 
         buttonCancel = view.findViewById(R.id.textButton_issue_book_cancel);
         buttonIssueBook = view.findViewById(R.id.textButton_issue_book);
-        spinnerBook = (Spinner) view.findViewById(R.id.spinnerBooksLoanFragment);
-        spinnerReader = (Spinner) view.findViewById(R.id.spinnerReadersLoanFragment);
+        spinnerBook = view.findViewById(R.id.spinnerBooksLoanFragment);
+        spinnerReader = view.findViewById(R.id.spinnerReadersLoanFragment);
 
         spinnerBook.setOnItemSelectedListener(new SpinnerBookClass());
         spinnerReader.setOnItemSelectedListener(new SpinnerReaderClass());

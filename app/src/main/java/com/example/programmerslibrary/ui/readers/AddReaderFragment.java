@@ -1,11 +1,6 @@
 package com.example.programmerslibrary.ui.readers;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Reader;
@@ -32,7 +31,7 @@ public class AddReaderFragment extends Fragment {
     String  lastname;
     String  email;
 
-    private MyAPIHelper db;
+    private MyDBHelper db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,9 +51,9 @@ public class AddReaderFragment extends Fragment {
         fragmentManager = getActivity().getSupportFragmentManager();
 
         //hasBook_check_box = (CheckBox) view.findViewById(R.id.has_book_check_box);
-        firstname_edit = (EditText) view.findViewById(R.id.firstname_edit_text);
-        lastname_edit = (EditText) view.findViewById(R.id.lastname_edit_text);
-        email_edit = (EditText) view.findViewById(R.id.email_edit_text);
+        firstname_edit = view.findViewById(R.id.firstname_edit_text);
+        lastname_edit = view.findViewById(R.id.lastname_edit_text);
+        email_edit = view.findViewById(R.id.email_edit_text);
 
         buttonBack = view.findViewById(R.id.addREaderBack);
         buttonSave = view.findViewById(R.id.addReaderSave);
@@ -83,13 +82,12 @@ public class AddReaderFragment extends Fragment {
                 email = email_edit.getText().toString();
                 //hasBook = hasBook_check_box.isChecked();
 
-                if(firstname.equalsIgnoreCase(""))
-                {
+                if(firstname.equalsIgnoreCase("")) {
                     firstname_edit.setError("please enter firstname");//it gives user to info message //use any one //
 
-                }
-                else
-                {
+                } else if (checkEmailEqual(email)) {
+                    email_edit.setError("please enter unique e-mail");//it gives user to info message //use any one //
+                } else {
                     Reader newReader = new Reader();
                     newReader.setUserid(user_id);
                     newReader.setFirst_name(firstname);
@@ -115,13 +113,21 @@ public class AddReaderFragment extends Fragment {
         return view;
     }
 
+    private boolean checkEmailEqual(String email) {
+        for (Reader r : db.getAllReaders(user_id)
+        ) {
+            if (r.getEmail().equals(email)) return true;
+        }
+        return false;
+    }
+
     /**
      * Inserting new book in db
      * and refreshing the list
      */
     private void createReader(Reader reader) {
 
-        MyAPIHelper db = MainActivity.getDb();
+        MyDBHelper db = MainActivity.getDb();
         // inserting book in db and getting
         // newly inserted book id
         long id = db.insertReader(reader);

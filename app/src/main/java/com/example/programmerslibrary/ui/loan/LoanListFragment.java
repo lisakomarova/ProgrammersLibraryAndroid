@@ -1,6 +1,15 @@
 package com.example.programmerslibrary.ui.loan;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,25 +20,22 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.StrictMode;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
+import com.example.programmerslibrary.SignUpActivity;
 import com.example.programmerslibrary.Utils.LoanAdapter;
 import com.example.programmerslibrary.Utils.RecyclerTouchListener;
 import com.example.programmerslibrary.models.Loan;
+import com.example.programmerslibrary.models.Reader;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 
 public class LoanListFragment extends Fragment {
 
-    MyAPIHelper db;
+    MyDBHelper db;
     private ArrayList<Loan> loanList = new ArrayList<>();
     private LoanAdapter mAdapter;
     private RecyclerView recyclerView;
@@ -38,6 +44,7 @@ public class LoanListFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -97,7 +104,7 @@ public class LoanListFragment extends Fragment {
             }
         }));
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        Toolbar toolbar = view.findViewById(R.id.toolbar_loans);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
 
@@ -115,6 +122,29 @@ public class LoanListFragment extends Fragment {
             noLoansView.setVisibility(View.GONE);
         } else {
             noLoansView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.appbar_loans_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        ArrayList<Reader> newReaderList;
+        switch (item.getItemId()) {
+            case R.id.item_logout:
+                FirebaseAuth.getInstance().signOut();
+
+                Intent intent = new Intent(getActivity(), SignUpActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                getActivity().finish();
+                return true;
+            default:
+                return false;
         }
     }
 }

@@ -7,6 +7,15 @@ import java.io.Serializable;
 
 public class Reader implements Serializable {
 
+    public static final String TABLE_NAME = "reader";
+
+    public static final String COLUMN_ID = "reader_id";
+    public static final String COLUMN_FIRSTNAME = "firstname";
+    public static final String COLUMN_LASTNAME = "lastname";
+    public static final String COLUMN_EMAIL = "email";
+    public static final String COLUMN_HASBOOK = "has_book";
+    public static final String COLUMN_USER_ID = "user_id";
+
     @NonNull
     private int reader_id;
     private String first_name;
@@ -20,6 +29,15 @@ public class Reader implements Serializable {
         this.has_book = has;
     }
 
+    public static final String CREATE_TABLE =
+            "CREATE TABLE " + TABLE_NAME + " ("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_USER_ID + " TEXT NOT NULL, "
+                    + COLUMN_FIRSTNAME + " TEXT NOT NULL, "
+                    + COLUMN_LASTNAME + " TEXT, "
+                    + COLUMN_EMAIL + " TEXT, "
+                    + COLUMN_HASBOOK + " TEXT CHECK( has_book IN ('true','false') ) NOT NULL DEFAULT 'false' "
+                    + ")";
 
     public Reader(){}
     public Reader(Reader another){

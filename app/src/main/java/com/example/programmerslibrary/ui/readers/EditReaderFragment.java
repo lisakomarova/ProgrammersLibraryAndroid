@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
@@ -14,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Reader;
@@ -22,7 +21,6 @@ import com.example.programmerslibrary.models.Reader;
 public class EditReaderFragment extends Fragment {
     FragmentManager fragmentManager;
 
-    CheckBox hasBook_check_box;
     EditText firstname_edit, lastname_edit, email_edit;
 
     Button buttonBack, buttonSave;
@@ -30,11 +28,10 @@ public class EditReaderFragment extends Fragment {
     String  firstname;
     String  lastname;
     String  email;
-    Boolean hasBook;
 
     Reader reader;
 
-    MyAPIHelper db;
+    MyDBHelper db;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,9 +51,9 @@ public class EditReaderFragment extends Fragment {
 
 
         //hasBook_check_box = (CheckBox) view.findViewById(R.id.edit_has_book_check_box);
-        firstname_edit = (EditText) view.findViewById(R.id.edit_firstname_edit_text);
-        lastname_edit = (EditText) view.findViewById(R.id.edit_lastname_edit_text);
-        email_edit = (EditText) view.findViewById(R.id.edit_email_edit_text);
+        firstname_edit = view.findViewById(R.id.edit_firstname_edit_text);
+        lastname_edit = view.findViewById(R.id.edit_lastname_edit_text);
+        email_edit = view.findViewById(R.id.edit_email_edit_text);
 
         buttonBack = view.findViewById(R.id.editReaderBack);
         buttonSave = view.findViewById(R.id.editReaderSave);

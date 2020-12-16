@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.models.Book;
@@ -33,7 +33,7 @@ public class ViewBookFragment extends Fragment {
     Spinner spinner;
     Button buttonBackEdit, buttonSaveEdit;
 
-    MyAPIHelper db;
+    MyDBHelper db;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class ViewBookFragment extends Fragment {
 
         fragmentManager = getActivity().getSupportFragmentManager();
 
-        spinner = (Spinner) view.findViewById(R.id.view_book_status_spinner);
+        spinner = view.findViewById(R.id.view_book_status_spinner);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
@@ -66,13 +66,13 @@ public class ViewBookFragment extends Fragment {
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
-        title_edit = (EditText) view.findViewById(R.id.view_title_edit_text);
-        genre_edit = (EditText) view.findViewById(R.id.view_genre_edit_text);
-        publ_date_edit = (EditText) view.findViewById(R.id.view_publ_date_edit_text);
-        authors_edit = (EditText) view.findViewById(R.id.view_authors_edit_text);
-        buttonBackEdit = (Button) view.findViewById(R.id.viewBookBack);
-        buttonSaveEdit = (Button) view.findViewById(R.id.ViewBookEdit);
-        imageView = (ImageView) view.findViewById(R.id.view_cover_image);
+        title_edit = view.findViewById(R.id.view_title_edit_text);
+        genre_edit = view.findViewById(R.id.view_genre_edit_text);
+        publ_date_edit = view.findViewById(R.id.view_publ_date_edit_text);
+        authors_edit = view.findViewById(R.id.view_authors_edit_text);
+        buttonBackEdit = view.findViewById(R.id.viewBookBack);
+        buttonSaveEdit = view.findViewById(R.id.ViewBookEdit);
+        imageView = view.findViewById(R.id.view_cover_image);
 
         //Retrieve the value
         final int position = getArguments().getInt("position");

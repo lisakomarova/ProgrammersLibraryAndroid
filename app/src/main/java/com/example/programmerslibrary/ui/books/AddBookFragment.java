@@ -5,12 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
@@ -25,7 +19,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
@@ -60,7 +59,7 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
     String  authors;
     String  book_status;
 
-    private MyAPIHelper db;
+    private MyDBHelper db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +80,7 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
         user_id = getArguments().getString("user");
 
 
-        spinner = (Spinner)view.findViewById(R.id.book_status_spinner);
+        spinner = view.findViewById(R.id.book_status_spinner);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
@@ -98,15 +97,15 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        title_edit = (EditText) view.findViewById(R.id.title_edit_text);
-        genre_edit = (EditText) view.findViewById(R.id.genre_edit_text);
-        publ_date_edit = (EditText) view.findViewById(R.id.publ_date_edit_text);
-        authors_edit = (EditText) view.findViewById(R.id.authors_edit_text);
-        chooseCover = (Button) view.findViewById(R.id.Choose);
-        buttonBack = (Button) view.findViewById(R.id.addBookBack);
-        buttonSave = (Button) view.findViewById(R.id.addBookSave);
+        title_edit = view.findViewById(R.id.title_edit_text);
+        genre_edit = view.findViewById(R.id.genre_edit_text);
+        publ_date_edit = view.findViewById(R.id.publ_date_edit_text);
+        authors_edit = view.findViewById(R.id.authors_edit_text);
+        chooseCover = view.findViewById(R.id.Choose);
+        buttonBack = view.findViewById(R.id.addBookBack);
+        buttonSave = view.findViewById(R.id.addBookSave);
         cover_path = view.findViewById(R.id.cover_path_textView);
-        imageView = (ImageView) view.findViewById(R.id.cover_path_imageView);
+        imageView = view.findViewById(R.id.cover_path_imageView);
 
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,8 +142,8 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
 
                 if(title.equalsIgnoreCase("") || publ_date.equalsIgnoreCase(""))
                 {
-                    title_edit.setError("please enter username");//it gives user to info message //use any one //
-                    publ_date_edit.setError("please enter username");//it gives user to info message //use any one //
+                    title_edit.setError("please enter title");//it gives user to info message //use any one //
+                    publ_date_edit.setError("please enter publication year");//it gives user to info message //use any one //
                 }
                 else if (publ_year < 1500 || publ_year > Integer.valueOf(Year.now().toString()))
                     publ_date_edit.setError("please enter correct year");
@@ -226,16 +225,17 @@ public class AddBookFragment extends Fragment implements AdapterView.OnItemSelec
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
     /**
      * Inserting new book in db
      * and refreshing the list
      */
     private void createBook(Book book) {
 
-        MyAPIHelper db = MainActivity.getDb();
+        MyDBHelper db = MainActivity.getDb();
         // inserting book in db and getting
         // newly inserted book id
-        long id = db.insertBook(book);
+        db.insertBook(book);
 
     }
 

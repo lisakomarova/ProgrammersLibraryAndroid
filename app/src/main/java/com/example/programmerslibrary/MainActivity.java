@@ -1,17 +1,11 @@
 package com.example.programmerslibrary;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.MenuItem;
-
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
-import com.example.programmerslibrary.ui.books.BookListFragment;
-import com.example.programmerslibrary.ui.loan.LoanListFragment;
-import com.example.programmerslibrary.ui.readers.ReaderListFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,21 +13,38 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.ui.AppBarConfiguration;
 
+import com.example.programmerslibrary.DataBase.MyDBHelper;
+import com.example.programmerslibrary.Utils.ShieldActivity;
+import com.example.programmerslibrary.ui.books.BookListFragment;
+import com.example.programmerslibrary.ui.loan.LoanListFragment;
+import com.example.programmerslibrary.ui.readers.ReaderListFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    static MyDBHelper db;
     private static String userID;
-    static MyAPIHelper db;
+    private boolean ifAuthbyFingerprint;
     private final int YOUR_PERMISSION_STATIC_CODE_IDENTIFIER=15;
 
+    public static MyDBHelper getDb() {
+        return db;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (!ifAuthbyFingerprint) {
+            auth();
+        }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
         super.onCreate(savedInstanceState);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_main);
-        db = new MyAPIHelper(getApplicationContext());
+        db = new MyDBHelper(getApplicationContext());
 
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -52,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnNavigationItemSelectedListener(navListener);
 
     }
+
+    private void auth() {
+        Intent intent = new Intent(this, ShieldActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -81,8 +98,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-    public static MyAPIHelper getDb(){
-        return db;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
+        String ifAuthbyFingerprint = data.getStringExtra("ifpass");
     }
 
     public static String getUserID(){

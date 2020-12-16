@@ -13,11 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import androidx.appcompat.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
@@ -45,7 +45,7 @@ import java.util.List;
 
 public class BookListFragment extends Fragment {
 
-    MyAPIHelper db;
+    MyDBHelper db;
     String user_id;
     FragmentManager fragmentManager;
     private ArrayList<Book> bookList = new ArrayList<>();
@@ -85,7 +85,7 @@ public class BookListFragment extends Fragment {
 
         bookList.addAll(db.getAllBooks(user_id));
 
-        FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab);
+        FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -147,7 +147,7 @@ public class BookListFragment extends Fragment {
      */
     private void deleteBook(int position) {
         // deleting the book from db
-        db.deleteBook(bookList.get(position).getBook_id());
+        db.deleteBook(bookList.get(position));
 
         // removing the book from the list
         bookList.remove(position);
@@ -218,7 +218,6 @@ public class BookListFragment extends Fragment {
         bookList.addAll(db.getAllBooks(user_id));
         mAdapter.notifyDataSetChanged();
     }
-
 
     private void returnBook(int position) {
         Loan loan = new Loan();
@@ -350,9 +349,7 @@ public class BookListFragment extends Fragment {
                         newBookList.add(b);
                     }
                 }
-                bookList.clear();
-                bookList.addAll(newBookList);
-                //bookList.retainAll(newBookList);
+                bookList.retainAll(newBookList);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.item_show_landed:
@@ -365,9 +362,7 @@ public class BookListFragment extends Fragment {
                         newBookList.add(b);
                     }
                 }
-                bookList.clear();
-                bookList.addAll(newBookList);
-                //bookList.retainAll(newBookList);
+                bookList.retainAll(newBookList);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.item_show_disposed:
@@ -380,9 +375,7 @@ public class BookListFragment extends Fragment {
                         newBookList.add(b);
                     }
                 }
-                bookList.clear();
-                bookList.addAll(newBookList);
-                //bookList.retainAll(newBookList);
+                bookList.retainAll(newBookList);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.item_show_all:

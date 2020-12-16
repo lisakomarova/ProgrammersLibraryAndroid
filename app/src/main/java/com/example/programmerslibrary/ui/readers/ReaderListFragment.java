@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
 import com.example.programmerslibrary.SignUpActivity;
@@ -34,10 +34,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReaderListFragment extends Fragment {
 
-    MyAPIHelper db;
+    MyDBHelper db;
     private ArrayList<Reader> readerList= new ArrayList<>();
     private ReaderAdapter mAdapter;
     private RecyclerView recyclerView;
@@ -71,7 +72,7 @@ public class ReaderListFragment extends Fragment {
 
         readerList.addAll(db.getAllReaders(user_id));
 
-        FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab_readers);
+        FloatingActionButton fab = view.findViewById(R.id.fab_readers);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,20 +129,6 @@ public class ReaderListFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Deleting book from SQLite and removing the
-     * item from the list by its position
-     */
-    private void deleteReader(int position) {
-        // deleting the book from db
-        db.deleteReader(readerList.get(position).getReader_id());
-
-        // removing the book from the list
-        readerList.remove(position);
-        mAdapter.notifyItemRemoved(position);
-
-        toggleEmptyNotes();
-    }
 
     /**
      * Opens dialog with Edit - Delete options
@@ -149,14 +136,23 @@ public class ReaderListFragment extends Fragment {
      * Delete - 0
      */
     private void showActionsDialog(final int position) {
-        CharSequence actions[] = new CharSequence[]{"Edit", "Delete"};
+        List<String> actions = new ArrayList<>();
+        actions.add("Edit");
 
+        if (!readerList.get(position).doesHaveBook()) {
+            actions.add("Delete");
+        }
+        if (readerList.get(position).doesHaveBook()) {
+            actions.add("Send message");
+        }
+
+        final CharSequence[] charActions = actions.toArray(new CharSequence[actions.size()]);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Choose option");
-        builder.setItems(actions, new DialogInterface.OnClickListener() {
+        builder.setItems(charActions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
+                if (charActions[which].equals("Edit")) {
                     // Create new fragment and transaction
                     Fragment newFragment = new EditReaderFragment();
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -171,9 +167,10 @@ public class ReaderListFragment extends Fragment {
 
                     // Commit the transaction
                     transaction.commit();
-                }
-                else if (which == 1) {
+                } else if (charActions[which].equals("Delete")) {
                     deleteReader(position);
+                } else {
+                    sendEmail(position);
                 }
             }
 
@@ -181,7 +178,34 @@ public class ReaderListFragment extends Fragment {
         builder.show();
     }
 
+    private void sendEmail(int position) {
+        String to = db.getReader(readerList.get(position).getReader_id()).getEmail();
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+        email.putExtra(Intent.EXTRA_SUBJECT, "Book");
+        email.putExtra(Intent.EXTRA_TEXT, "Верни книгу!");
 
+        //need this to prompts email client only
+        email.setType("message/rfc822");
+
+        startActivity(Intent.createChooser(email, "Choose an Email client :"));
+    }
+
+
+    /**
+     * Deleting book from db and removing the
+     * item from the list by its position
+     */
+    private void deleteReader(int position) {
+        // deleting the book from db
+        db.deleteReader(readerList.get(position));
+
+        // removing the book from the list
+        readerList.remove(position);
+        mAdapter.notifyItemRemoved(position);
+
+        toggleEmptyNotes();
+    }
 
     /**
      * Toggling list and empty notes view
@@ -238,6 +262,7 @@ public class ReaderListFragment extends Fragment {
                 readerList.clear();
                 readerList.addAll(db.getAllReaders(user_id));
                 mAdapter.notifyDataSetChanged();
+                return true;
             case R.id.item_logout:
                 FirebaseAuth.getInstance().signOut();
 

@@ -10,6 +10,17 @@ import java.util.Calendar;
 
 public class Book implements Serializable {
 
+    public static final String TABLE_NAME = "book";
+
+    public static final String COLUMN_ID = "book_id";
+    public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_GENRE = "genre";
+    public static final String COLUMN_PUBLICATION_YEAR = "publication_year";
+    public static final String COLUMN_AUTHORS = "authors";
+    public static final String COLUMN_BOOK_STATUS = "book_status";
+    public static final String COLUMN_COVER = "cover";
+    public static final String COLUMN_USER_ID = "user_id";
+
     private int book_id;
     private String title;
     private String genre;
@@ -19,6 +30,18 @@ public class Book implements Serializable {
     private String cover;
     private String userid;
 
+
+    public static final String CREATE_TABLE =
+            "CREATE TABLE " + TABLE_NAME + " ("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COLUMN_USER_ID + " TEXT NOT NULL, "
+                    + COLUMN_TITLE + " TEXT NOT NULL, "
+                    + COLUMN_GENRE + " TEXT, "
+                    + COLUMN_PUBLICATION_YEAR + " INTEGER NOT NULL, "
+                    + COLUMN_AUTHORS + " TEXT, "
+                    + COLUMN_BOOK_STATUS + " TEXT CHECK( book_status IN ('AVAILABLE','LOANED', 'DISPOSED') ) NOT NULL DEFAULT 'AVAILABLE', "
+                    + COLUMN_COVER + " TEXT "
+                    + ")";
 
     public Book (){
 
@@ -33,6 +56,7 @@ public class Book implements Serializable {
         this.cover = another.cover;
         this.userid = another.userid;
     }
+
     public Book(@NonNull int book_id, String user_id, @NonNull String title, String genre, int publication_year,
                 String authors, BookStatus book_status, String cover){
         if((publication_year < 1900) & (publication_year > Calendar.getInstance().get(Calendar.YEAR)))
@@ -78,7 +102,6 @@ public class Book implements Serializable {
     public void setAuthors(String authors) {
         this.authors = authors;
     }
-
 
     public BookStatus getBook_status() {
         return book_status;

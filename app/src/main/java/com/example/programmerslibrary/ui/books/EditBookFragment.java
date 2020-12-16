@@ -5,12 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
@@ -25,7 +19,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.programmerslibrary.DataBase.MyAPIHelper;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.programmerslibrary.DataBase.MyDBHelper;
 import com.example.programmerslibrary.Enumerations.BookStatus;
 import com.example.programmerslibrary.MainActivity;
 import com.example.programmerslibrary.R;
@@ -59,7 +58,7 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
     String authors;
     String book_status;
 
-    MyAPIHelper db;
+    MyDBHelper db;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,7 +76,7 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
 
         fragmentManager = getActivity().getSupportFragmentManager();
 
-        spinner = (Spinner) view.findViewById(R.id.edit_book_status_spinner);
+        spinner = view.findViewById(R.id.edit_book_status_spinner);
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
@@ -90,15 +89,15 @@ public class EditBookFragment extends Fragment implements AdapterView.OnItemSele
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        title_edit = (EditText) view.findViewById(R.id.edit_title_edit_text);
-        genre_edit = (EditText) view.findViewById(R.id.edit_genre_edit_text);
-        publ_date_edit = (EditText) view.findViewById(R.id.edit_publ_date_edit_text);
-        authors_edit = (EditText) view.findViewById(R.id.edit_authors_edit_text);
-        chooseCoverEdit = (Button) view.findViewById(R.id.edit_Choose);
-        buttonBackEdit = (Button) view.findViewById(R.id.editBookBack);
-        buttonSaveEdit = (Button) view.findViewById(R.id.editBookSave);
+        title_edit = view.findViewById(R.id.edit_title_edit_text);
+        genre_edit = view.findViewById(R.id.edit_genre_edit_text);
+        publ_date_edit = view.findViewById(R.id.edit_publ_date_edit_text);
+        authors_edit = view.findViewById(R.id.edit_authors_edit_text);
+        chooseCoverEdit = view.findViewById(R.id.edit_Choose);
+        buttonBackEdit = view.findViewById(R.id.editBookBack);
+        buttonSaveEdit = view.findViewById(R.id.editBookSave);
         cover_path = view.findViewById(R.id.edit_cover_path_textView);
-        imageView = (ImageView) view.findViewById(R.id.edit_cover_path_imageView);
+        imageView = view.findViewById(R.id.edit_cover_path_imageView);
 
         //Retrieve the value
         final int position = getArguments().getInt("position");

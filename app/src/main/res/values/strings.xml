@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ProgrammersLibrary</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_users">Users</string>
+    <string name="title_users">Readers</string>
     <string name="title_books">Books</string>
     <string name="msg_no_book">No books found!</string>
 
@@ -37,7 +37,7 @@
     <string name="add_book">Add book</string>
     <string name="title">Title</string>
     <string name="genre">Genre</string>
-    <string name="publication_date">Publication date</string>
+    <string name="publication_date">Publication year</string>
     <string name="authors">Authors</string>
     <string name="number_of_copies">Number of copies</string>
     <string name="choose_cover">Choose cover</string>
